@@ -105,7 +105,7 @@ public:
   void set_bass_redirection(bool v);
 
   // number of samples currently held in the buffer
-  unsigned int buffered();
+  unsigned int buffered() const;
 
 private:
   // constants

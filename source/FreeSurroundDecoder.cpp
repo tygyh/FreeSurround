@@ -103,7 +103,7 @@ void DPL2FSDecoder::flush() {
 }
 
 // number of samples currently held in the buffer
-unsigned int DPL2FSDecoder::buffered() { return buffer_empty ? 0 : N / 2; }
+unsigned int DPL2FSDecoder::buffered() const { return buffer_empty ? 0 : N / 2; }
 
 // set soundfield & rendering parameters
 void DPL2FSDecoder::set_circular_wrap(const float v) { circular_wrap = v; }
