@@ -48,7 +48,8 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  4*4*4*2
  */
 
-struct kiss_fft_state {
+struct kiss_fft_state
+{
   int nfft;
   int inverse;
   int factors[2 * MAXFACTORS];

@@ -49,12 +49,13 @@ extern "C" {
 #endif
 #endif
 
-typedef struct {
-  kiss_fft_scalar r;
-  kiss_fft_scalar i;
+typedef struct
+{
+ kiss_fft_scalar r;
+ kiss_fft_scalar i;
 } kiss_fft_cpx;
 
-typedef struct kiss_fft_state *kiss_fft_cfg;
+typedef struct kiss_fft_state* kiss_fft_cfg;
 
 /*
  *  kiss_fft_alloc
@@ -80,8 +81,8 @@ typedef struct kiss_fft_state *kiss_fft_cfg;
  *      buffer size in *lenmem.
  * */
 
-kiss_fft_cfg kiss_fft_alloc(int nfft, int inverse_fft, void *mem,
-                            size_t *lenmem);
+kiss_fft_cfg kiss_fft_alloc(int nfft, int inverse_fft, void* mem,
+                            size_t* lenmem);
 
 /*
  * kiss_fft(cfg,in_out_buf)
@@ -93,14 +94,14 @@ kiss_fft_cfg kiss_fft_alloc(int nfft, int inverse_fft, void *mem,
  * Note that each element is complex and can be accessed like
     f[k].r and f[k].i
  * */
-void kiss_fft(kiss_fft_cfg cfg, const kiss_fft_cpx *fin, kiss_fft_cpx *fout);
+void kiss_fft(kiss_fft_cfg cfg, const kiss_fft_cpx* fin, kiss_fft_cpx* fout);
 
 /*
  A more generic version of the above function. It reads its input from every Nth
  sample.
  * */
-void kiss_fft_stride(kiss_fft_cfg cfg, const kiss_fft_cpx *fin,
-                     kiss_fft_cpx *fout, int fin_stride);
+void kiss_fft_stride(kiss_fft_cfg cfg, const kiss_fft_cpx* fin,
+                     kiss_fft_cpx* fout, int fin_stride);
 
 /* If kiss_fft_alloc allocated a buffer, it is one contiguous
    buffer and can be simply free()d when no longer needed*/

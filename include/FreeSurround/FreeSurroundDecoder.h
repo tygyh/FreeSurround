@@ -27,7 +27,8 @@ typedef std::complex<double> cplx;
 // right). The ordering here also determines the ordering of interleaved
 // samples in the output signal.
 
-typedef enum channel_id {
+typedef enum channel_id
+{
   ci_none = 0,
   ci_front_left = 1 << 1,
   ci_front_center_left = 1 << 2,
@@ -51,18 +52,20 @@ typedef enum channel_id {
 // The supported output channel setups. A channel setup is defined by the set
 // of channels that are present. Here is a graphic of the cs_5point1 setup:
 // http://en.wikipedia.org/wiki/File:5_1_channels_(surround_sound)_label.svg
-typedef enum channel_setup {
+typedef enum channel_setup
+{
   cs_5point1 = ci_front_left | ci_front_center | ci_front_right | ci_back_left |
-               ci_back_right | ci_lfe,
+  ci_back_right | ci_lfe,
 
   cs_7point1 = ci_front_left | ci_front_center | ci_front_right |
-               ci_side_center_left | ci_side_center_right | ci_back_left |
-               ci_back_right | ci_lfe
+  ci_side_center_left | ci_side_center_right | ci_back_left |
+  ci_back_right | ci_lfe
 } channel_setup;
 
 // The FreeSurround decoder.
 
-class DPL2FSDecoder {
+class DPL2FSDecoder
+{
 public:
   // Create an instance of the decoder.
   // @param setup The output channel setup -- determines the number of output
@@ -86,7 +89,7 @@ public:
   // @return A pointer to an internal buffer of exactly blocksize (multiplexed)
   // multichannel samples. The actual number of values depends on the number of
   // output channels in the chosen channel setup.
-  float *decode(const float *input);
+  float* decode(const float* input);
 
   // Flush the internal buffer.
   void flush();
@@ -179,8 +182,8 @@ private:
 
   // helper functions
   inline float sqr(double x);
-  inline double amplitude(const cplx &x);
-  inline double phase(const cplx &x);
+  inline double amplitude(const cplx& x);
+  inline double phase(const cplx& x);
   inline cplx polar(double a, double p);
   inline float min(double a, double b);
   inline float max(double a, double b);
@@ -192,18 +195,18 @@ private:
 
   // get the index (and fractional offset!) in a piecewise-linear channel
   // allocation grid
-  int map_to_grid(double &x);
+  int map_to_grid(double& x);
 
   // decode a block of data and overlap-add it into outbuf
-  void buffered_decode(const float *input);
+  void buffered_decode(const float* input);
 
   // transform amp/phase difference space into x/y soundfield space
-  void transform_decode(double a, double p, double &x, double &y);
+  void transform_decode(double a, double p, double& x, double& y);
 
   // apply a circular_wrap transformation to some position
-  void transform_circular_wrap(double &x, double &y, double refangle);
+  void transform_circular_wrap(double& x, double& y, double refangle);
 
   // apply a focus transformation to some position
-  void transform_focus(double &x, double &y, double focus);
+  void transform_focus(double& x, double& y, double focus);
 };
 #endif

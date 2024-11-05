@@ -25,18 +25,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // FreeSurround implementation
 // DPL2FSDecoder::Init() must be called before using the decoder.
-DPL2FSDecoder::DPL2FSDecoder() {
+DPL2FSDecoder::DPL2FSDecoder()
+{
   initialized = false;
   buffer_empty = true;
 }
 
-DPL2FSDecoder::~DPL2FSDecoder() {
+DPL2FSDecoder::~DPL2FSDecoder()
+{
   kiss_fftr_free(forward);
   kiss_fftr_free(inverse);
 }
 
-void DPL2FSDecoder::Init(const channel_setup chsetup, const unsigned int blsize, const unsigned int sample_rate) {
-  if (!initialized) {
+void DPL2FSDecoder::Init(const channel_setup chsetup, const unsigned int blsize, const unsigned int sample_rate)
+{
+  if (!initialized)
+  {
     setup = chsetup;
     N = blsize;
     samplerate = sample_rate;
@@ -79,8 +83,10 @@ void DPL2FSDecoder::Init(const channel_setup chsetup, const unsigned int blsize,
 
 // decode a stereo chunk, produces a multichannel chunk of the same size
 // (lagged)
-float *DPL2FSDecoder::decode(const float *input) {
-  if (initialized) {
+float* DPL2FSDecoder::decode(const float* input)
+{
+  if (initialized)
+  {
     // append incoming data to the end of the input buffer
     memcpy(&inbuf[N], &input[0], 8 * N);
     // process first and second half, overlapped
@@ -96,7 +102,8 @@ float *DPL2FSDecoder::decode(const float *input) {
 }
 
 // flush the internal buffers
-void DPL2FSDecoder::flush() {
+void DPL2FSDecoder::flush()
+{
   memset(&outbuf[0], 0, outbuf.size() * 4);
   memset(&inbuf[0], 0, inbuf.size() * 4);
   buffer_empty = true;
@@ -119,41 +126,60 @@ void DPL2FSDecoder::set_bass_redirection(const bool v) { use_lfe = v; }
 
 // helper functions
 inline float DPL2FSDecoder::sqr(const double x) { return static_cast<float>(x * x); }
-inline double DPL2FSDecoder::amplitude(const cplx &x) {
+
+inline double DPL2FSDecoder::amplitude(const cplx& x)
+{
   return sqrt(sqr(x.real()) + sqr(x.imag()));
 }
-inline double DPL2FSDecoder::phase(const cplx &x) {
+
+inline double DPL2FSDecoder::phase(const cplx& x)
+{
   return atan2(x.imag(), x.real());
 }
-inline cplx DPL2FSDecoder::polar(const double a, const double p) {
+
+inline cplx DPL2FSDecoder::polar(const double a, const double p)
+{
   return cplx(a * cos(p), a * sin(p));
 }
-inline float DPL2FSDecoder::min(const double a, const double b) {
+
+inline float DPL2FSDecoder::min(const double a, const double b)
+{
   return static_cast<float>(a < b ? a : b);
 }
-inline float DPL2FSDecoder::max(const double a, const double b) {
+
+inline float DPL2FSDecoder::max(const double a, const double b)
+{
   return static_cast<float>(a > b ? a : b);
 }
+
 inline float DPL2FSDecoder::clamp(const double x) { return max(-1, min(1, x)); }
-inline float DPL2FSDecoder::sign(const double x) {
+
+inline float DPL2FSDecoder::sign(const double x)
+{
   return static_cast<float>(x < 0 ? -1 : x > 0 ? 1 : 0);
 }
+
 // get the distance of the soundfield edge, along a given angle
-inline double DPL2FSDecoder::edgedistance(const double a) {
+inline double DPL2FSDecoder::edgedistance(const double a)
+{
   return min(sqrt(1 + sqr(tan(a))), sqrt(1 + sqr(1 / tan(a))));
 }
+
 // get the index (and fractional offset!) in a piecewise-linear channel
 // allocation grid
-int DPL2FSDecoder::map_to_grid(double &x) {
+int DPL2FSDecoder::map_to_grid(double& x)
+{
   const double gp = (x + 1) * 0.5 * (grid_res - 1), i = min(grid_res - 2, floor(gp));
   x = gp - i;
   return static_cast<int>(i);
 }
 
 // decode a block of data and overlap-add it into outbuf
-void DPL2FSDecoder::buffered_decode(const float *input) {
+void DPL2FSDecoder::buffered_decode(const float* input)
+{
   // demultiplex and apply window function
-  for (unsigned int k = 0; k < N; k++) {
+  for (unsigned int k = 0; k < N; k++)
+  {
     lt[k] = wnd[k] * input[k * 2 + 0];
     rt[k] = wnd[k] * input[k * 2 + 1];
   }
@@ -163,7 +189,8 @@ void DPL2FSDecoder::buffered_decode(const float *input) {
   kiss_fftr(forward, &rt[0], reinterpret_cast<kiss_fft_cpx*>(&rf[0]));
 
   // compute multichannel output signal in the spectral domain
-  for (unsigned int f = 1; f < N / 2; f++) {
+  for (unsigned int f = 1; f < N / 2; f++)
+  {
     // get Lt/Rt amplitudes & phases
     const double ampL = amplitude(lf[f]), ampR = amplitude(rf[f]), phaseL = phase(lf[f]), phaseR = phase(rf[f]);
     // calculate the amplitude & phase differences
@@ -185,7 +212,7 @@ void DPL2FSDecoder::buffered_decode(const float *input) {
     transform_focus(x, y, focus);
     // add crossfeed control
     x = clamp(x *
-              (front_separation * (1 + y) / 2 + rear_separation * (1 - y) / 2));
+      (front_separation * (1 + y) / 2 + rear_separation * (1 - y) / 2));
 
     // get total signal amplitude
     const double amp_total = sqrt(ampL * ampL + ampR * ampR);
@@ -195,23 +222,26 @@ void DPL2FSDecoder::buffered_decode(const float *input) {
     // in the map grid
     const int p = map_to_grid(x), q = map_to_grid(y);
     // map position to channel volumes
-    for (unsigned int c = 0; c < C - 1; c++) {
+    for (unsigned int c = 0; c < C - 1; c++)
+    {
       // look up channel map at respective position (with bilinear
       // interpolation) and build the
       // signal
-      std::vector<float *> &a = chn_alloc[setup][c];
+      std::vector<float*>& a = chn_alloc[setup][c];
       signal[c][f] = polar(
-          amp_total * ((1 - x) * (1 - y) * a[q][p] + x * (1 - y) * a[q][p + 1] +
-                       (1 - x) * y * a[q + 1][p] + x * y * a[q + 1][p + 1]),
-          phase_of[1 + static_cast<int>(sign(chn_xsf[setup][c]))]);
+        amp_total * ((1 - x) * (1 - y) * a[q][p] + x * (1 - y) * a[q][p + 1] +
+          (1 - x) * y * a[q + 1][p] + x * y * a[q + 1][p + 1]),
+        phase_of[1 + static_cast<int>(sign(chn_xsf[setup][c]))]);
     }
 
     // optionally redirect bass
-    if (use_lfe && f < hi_cut) {
+    if (use_lfe && f < hi_cut)
+    {
       // level of LFE channel according to normalized frequency
       double lfe_level =
-          f < lo_cut ? 1
-                     : 0.5 * (1 + cos(pi * (f - lo_cut) / (hi_cut - lo_cut)));
+        f < lo_cut
+          ? 1
+          : 0.5 * (1 + cos(pi * (f - lo_cut) / (hi_cut - lo_cut)));
       // assign LFE channel
       signal[C - 1][f] = lfe_level * polar(amp_total, phase_of[1]);
       // subtract the signal from the other channels
@@ -225,7 +255,8 @@ void DPL2FSDecoder::buffered_decode(const float *input) {
   // and clear the rest
   memset(&outbuf[C * N], 0, C * 4 * N / 2);
   // backtransform each channel and overlap-add
-  for (unsigned int c = 0; c < C; c++) {
+  for (unsigned int c = 0; c < C; c++)
+  {
     // back-transform into time domain
     kiss_fftri(inverse, reinterpret_cast<kiss_fft_cpx*>(&signal[c][0]), &dst[0]);
     // add the result to the last 2/3 of the output buffer, windowed (and
@@ -236,35 +267,37 @@ void DPL2FSDecoder::buffered_decode(const float *input) {
 }
 
 // transform amp/phase difference space into x/y soundfield space
-void DPL2FSDecoder::transform_decode(const double a, const double p, double &x, double &y) {
+void DPL2FSDecoder::transform_decode(const double a, const double p, double& x, double& y)
+{
   x = clamp(1.0047 * a + 0.46804 * a * p * p * p - 0.2042 * a * p * p * p * p +
-            0.0080586 * a * p * p * p * p * p * p * p -
-            0.0001526 * a * p * p * p * p * p * p * p * p * p * p -
-            0.073512 * a * a * a * p - 0.2499 * a * a * a * p * p * p * p +
-            0.016932 * a * a * a * p * p * p * p * p * p * p -
-            0.00027707 * a * a * a * p * p * p * p * p * p * p * p * p * p +
-            0.048105 * a * a * a * a * a * p * p * p * p * p * p * p -
-            0.0065947 * a * a * a * a * a * p * p * p * p * p * p * p * p * p *
-                p +
-            0.0016006 * a * a * a * a * a * p * p * p * p * p * p * p * p * p *
-                p * p -
-            0.0071132 * a * a * a * a * a * a * a * p * p * p * p * p * p * p *
-                p * p +
-            0.0022336 * a * a * a * a * a * a * a * p * p * p * p * p * p * p *
-                p * p * p * p -
-            0.0004804 * a * a * a * a * a * a * a * p * p * p * p * p * p * p *
-                p * p * p * p * p);
+    0.0080586 * a * p * p * p * p * p * p * p -
+    0.0001526 * a * p * p * p * p * p * p * p * p * p * p -
+    0.073512 * a * a * a * p - 0.2499 * a * a * a * p * p * p * p +
+    0.016932 * a * a * a * p * p * p * p * p * p * p -
+    0.00027707 * a * a * a * p * p * p * p * p * p * p * p * p * p +
+    0.048105 * a * a * a * a * a * p * p * p * p * p * p * p -
+    0.0065947 * a * a * a * a * a * p * p * p * p * p * p * p * p * p *
+    p +
+    0.0016006 * a * a * a * a * a * p * p * p * p * p * p * p * p * p *
+    p * p -
+    0.0071132 * a * a * a * a * a * a * a * p * p * p * p * p * p * p *
+    p * p +
+    0.0022336 * a * a * a * a * a * a * a * p * p * p * p * p * p * p *
+    p * p * p * p -
+    0.0004804 * a * a * a * a * a * a * a * p * p * p * p * p * p * p *
+    p * p * p * p * p);
   y = clamp(
-      0.98592 - 0.62237 * p + 0.077875 * p * p - 0.0026929 * p * p * p * p * p +
-      0.4971 * a * a * p - 0.00032124 * a * a * p * p * p * p * p * p +
-      9.2491e-006 * a * a * a * a * p * p * p * p * p * p * p * p * p * p +
-      0.051549 * a * a * a * a * a * a * a * a +
-      1.0727e-014 * a * a * a * a * a * a * a * a * a * a);
+    0.98592 - 0.62237 * p + 0.077875 * p * p - 0.0026929 * p * p * p * p * p +
+    0.4971 * a * a * p - 0.00032124 * a * a * p * p * p * p * p * p +
+    9.2491e-006 * a * a * a * a * p * p * p * p * p * p * p * p * p * p +
+    0.051549 * a * a * a * a * a * a * a * a +
+    1.0727e-014 * a * a * a * a * a * a * a * a * a * a);
 }
 
 // apply a circular_wrap transformation to some position
-void DPL2FSDecoder::transform_circular_wrap(double &x, double &y,
-                                            double refangle) {
+void DPL2FSDecoder::transform_circular_wrap(double& x, double& y,
+                                            double refangle)
+{
   if (refangle == 90)
     return;
   refangle = refangle * pi / 180;
@@ -287,7 +320,8 @@ void DPL2FSDecoder::transform_circular_wrap(double &x, double &y,
 }
 
 // apply a focus transformation to some position
-void DPL2FSDecoder::transform_focus(double &x, double &y, const double focus) {
+void DPL2FSDecoder::transform_focus(double& x, double& y, const double focus)
+{
   if (focus == 0)
     return;
   const double ang = atan2(x, y);
