@@ -145,8 +145,7 @@ inline double DPL2FSDecoder::edgedistance(const double a) {
 // get the index (and fractional offset!) in a piecewise-linear channel
 // allocation grid
 int DPL2FSDecoder::map_to_grid(double &x) {
-  double gp = (x + 1) * 0.5 * (grid_res - 1),
-         i = min(grid_res - 2, floor(gp));
+  const double gp = (x + 1) * 0.5 * (grid_res - 1), i = min(grid_res - 2, floor(gp));
   x = gp - i;
   return static_cast<int>(i);
 }
@@ -166,11 +165,9 @@ void DPL2FSDecoder::buffered_decode(const float *input) {
   // compute multichannel output signal in the spectral domain
   for (unsigned int f = 1; f < N / 2; f++) {
     // get Lt/Rt amplitudes & phases
-    double ampL = amplitude(lf[f]), ampR = amplitude(rf[f]);
-    double phaseL = phase(lf[f]), phaseR = phase(rf[f]);
+    const double ampL = amplitude(lf[f]), ampR = amplitude(rf[f]), phaseL = phase(lf[f]), phaseR = phase(rf[f]);
     // calculate the amplitude & phase differences
-    double ampDiff =
-        clamp(ampL + ampR < epsilon ? 0 : (ampR - ampL) / (ampR + ampL));
+    const double ampDiff = clamp(ampL + ampR < epsilon ? 0 : (ampR - ampL) / (ampR + ampL));
     double phaseDiff = abs(phaseL - phaseR);
     if (phaseDiff > pi)
       phaseDiff = 2 * pi - phaseDiff;
@@ -191,14 +188,12 @@ void DPL2FSDecoder::buffered_decode(const float *input) {
               (front_separation * (1 + y) / 2 + rear_separation * (1 - y) / 2));
 
     // get total signal amplitude
-    double amp_total = sqrt(ampL * ampL + ampR * ampR);
+    const double amp_total = sqrt(ampL * ampL + ampR * ampR);
     // and total L/C/R signal phases
-    double phase_of[] = {
-        phaseL, atan2(lf[f].imag() + rf[f].imag(), lf[f].real() + rf[f].real()),
-        phaseR};
+    const double phase_of[] = {phaseL, atan2(lf[f].imag() + rf[f].imag(), lf[f].real() + rf[f].real()), phaseR};
     // compute 2d channel map indexes p/q and update x/y to fractional offsets
     // in the map grid
-    int p = map_to_grid(x), q = map_to_grid(y);
+    const int p = map_to_grid(x), q = map_to_grid(y);
     // map position to channel volumes
     for (unsigned int c = 0; c < C - 1; c++) {
       // look up channel map at respective position (with bilinear
@@ -273,7 +268,7 @@ void DPL2FSDecoder::transform_circular_wrap(double &x, double &y,
   if (refangle == 90)
     return;
   refangle = refangle * pi / 180;
-  double baseangle = 90 * pi / 180;
+  const double baseangle = 90 * pi / 180;
   // translate into edge-normalized polar coordinates
   double ang = atan2(x, y), len = sqrt(x * x + y * y);
   len = len / edgedistance(ang);
