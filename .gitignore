@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+*.vcxproj
+.idea
+cmake-build-debug
