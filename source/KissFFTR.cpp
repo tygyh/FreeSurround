@@ -65,17 +65,17 @@ kiss_fftr_cfg kiss_fftr_alloc(int nfft, int inverse_fft, void *mem,
               sizeof(kiss_fft_cpx) * (nfft * 3 / 2);
 
   if (lenmem == nullptr) {
-    st = (kiss_fftr_cfg)malloc(memneeded);
+    st = static_cast<kiss_fftr_cfg>(malloc(memneeded));
   } else {
     if (*lenmem >= memneeded)
-      st = (kiss_fftr_cfg)mem;
+      st = static_cast<kiss_fftr_cfg>(mem);
     *lenmem = memneeded;
   }
   if (!st)
     return nullptr;
 
-  st->substate = (kiss_fft_cfg)(st + 1); /*just beyond kiss_fftr_state struct */
-  st->tmpbuf = (kiss_fft_cpx *)((char *)st->substate + subsize);
+  st->substate = reinterpret_cast<kiss_fft_cfg>(st + 1); /*just beyond kiss_fftr_state struct */
+  st->tmpbuf = reinterpret_cast<kiss_fft_cpx*>(reinterpret_cast<char*>(st->substate) + subsize);
   st->super_twiddles = st->tmpbuf + nfft;
   kiss_fft_alloc(nfft, inverse_fft, st->substate, &subsize);
 
@@ -103,7 +103,7 @@ void kiss_fftr(kiss_fftr_cfg st, const kiss_fft_scalar *timedata,
   ncfft = st->substate->nfft;
 
   /*perform the parallel fft of two real signals packed in real,imag*/
-  kiss_fft(st->substate, (const kiss_fft_cpx *)timedata, st->tmpbuf);
+  kiss_fft(st->substate, reinterpret_cast<const kiss_fft_cpx*>(timedata), st->tmpbuf);
   /* The real part of the DC element of the frequency spectrum in st->tmpbuf
    * contains the sum of the even-numbered elements of the input time sequence
    * The imag part is the sum of the odd-numbered elements
@@ -181,5 +181,5 @@ void kiss_fftri(kiss_fftr_cfg st, const kiss_fft_cpx *freqdata,
     st->tmpbuf[ncfft - k].i *= -1;
 #endif
   }
-  kiss_fft(st->substate, st->tmpbuf, (kiss_fft_cpx *)timedata);
+  kiss_fft(st->substate, st->tmpbuf, reinterpret_cast<kiss_fft_cpx*>(timedata));
 }
