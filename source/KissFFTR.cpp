@@ -48,8 +48,7 @@ struct kiss_fftr_state {
 #endif
 };
 
-kiss_fftr_cfg kiss_fftr_alloc(int nfft, int inverse_fft, void *mem,
-                              size_t *lenmem) {
+kiss_fftr_cfg kiss_fftr_alloc(int nfft, const int inverse_fft, void *mem, size_t *lenmem) {
   kiss_fftr_cfg st = nullptr;
   size_t subsize = 65536 * 4, memneeded = 0;
 

@@ -372,8 +372,7 @@ static void kf_factor(int n, int *facbuf) {
  * such,
  * It can be freed with free(), rather than a kiss_fft-specific function.
  * */
-kiss_fft_cfg kiss_fft_alloc(int nfft, int inverse_fft, void *mem,
-                            size_t *lenmem) {
+kiss_fft_cfg kiss_fft_alloc(int nfft, const int inverse_fft, void *mem, size_t *lenmem) {
   kiss_fft_cfg st = nullptr;
   size_t memneeded = sizeof(struct kiss_fft_state) +
                      sizeof(kiss_fft_cpx) * (nfft - 1); /* twiddle factors*/

@@ -35,8 +35,7 @@ DPL2FSDecoder::~DPL2FSDecoder() {
   kiss_fftr_free(inverse);
 }
 
-void DPL2FSDecoder::Init(channel_setup chsetup, unsigned int blsize,
-                         unsigned int sample_rate) {
+void DPL2FSDecoder::Init(const channel_setup chsetup, const unsigned int blsize, const unsigned int sample_rate) {
   if (!initialized) {
     setup = chsetup;
     N = blsize;
@@ -80,7 +79,7 @@ void DPL2FSDecoder::Init(channel_setup chsetup, unsigned int blsize,
 
 // decode a stereo chunk, produces a multichannel chunk of the same size
 // (lagged)
-float *DPL2FSDecoder::decode(float *input) {
+float *DPL2FSDecoder::decode(const float *input) {
   if (initialized) {
     // append incoming data to the end of the input buffer
     memcpy(&inbuf[N], &input[0], 8 * N);
@@ -107,40 +106,40 @@ void DPL2FSDecoder::flush() {
 unsigned int DPL2FSDecoder::buffered() { return buffer_empty ? 0 : N / 2; }
 
 // set soundfield & rendering parameters
-void DPL2FSDecoder::set_circular_wrap(float v) { circular_wrap = v; }
-void DPL2FSDecoder::set_shift(float v) { shift = v; }
-void DPL2FSDecoder::set_depth(float v) { depth = v; }
-void DPL2FSDecoder::set_focus(float v) { focus = v; }
-void DPL2FSDecoder::set_center_image(float v) { center_image = v; }
-void DPL2FSDecoder::set_front_separation(float v) { front_separation = v; }
-void DPL2FSDecoder::set_rear_separation(float v) { rear_separation = v; }
-void DPL2FSDecoder::set_low_cutoff(float v) { lo_cut = v * (N / 2); }
-void DPL2FSDecoder::set_high_cutoff(float v) { hi_cut = v * (N / 2); }
-void DPL2FSDecoder::set_bass_redirection(bool v) { use_lfe = v; }
+void DPL2FSDecoder::set_circular_wrap(const float v) { circular_wrap = v; }
+void DPL2FSDecoder::set_shift(const float v) { shift = v; }
+void DPL2FSDecoder::set_depth(const float v) { depth = v; }
+void DPL2FSDecoder::set_focus(const float v) { focus = v; }
+void DPL2FSDecoder::set_center_image(const float v) { center_image = v; }
+void DPL2FSDecoder::set_front_separation(const float v) { front_separation = v; }
+void DPL2FSDecoder::set_rear_separation(const float v) { rear_separation = v; }
+void DPL2FSDecoder::set_low_cutoff(const float v) { lo_cut = v * (N / 2); }
+void DPL2FSDecoder::set_high_cutoff(const float v) { hi_cut = v * (N / 2); }
+void DPL2FSDecoder::set_bass_redirection(const bool v) { use_lfe = v; }
 
 // helper functions
-inline float DPL2FSDecoder::sqr(double x) { return static_cast<float>(x * x); }
+inline float DPL2FSDecoder::sqr(const double x) { return static_cast<float>(x * x); }
 inline double DPL2FSDecoder::amplitude(const cplx &x) {
   return sqrt(sqr(x.real()) + sqr(x.imag()));
 }
 inline double DPL2FSDecoder::phase(const cplx &x) {
   return atan2(x.imag(), x.real());
 }
-inline cplx DPL2FSDecoder::polar(double a, double p) {
+inline cplx DPL2FSDecoder::polar(const double a, const double p) {
   return cplx(a * cos(p), a * sin(p));
 }
-inline float DPL2FSDecoder::min(double a, double b) {
+inline float DPL2FSDecoder::min(const double a, const double b) {
   return static_cast<float>(a < b ? a : b);
 }
-inline float DPL2FSDecoder::max(double a, double b) {
+inline float DPL2FSDecoder::max(const double a, const double b) {
   return static_cast<float>(a > b ? a : b);
 }
-inline float DPL2FSDecoder::clamp(double x) { return max(-1, min(1, x)); }
-inline float DPL2FSDecoder::sign(double x) {
+inline float DPL2FSDecoder::clamp(const double x) { return max(-1, min(1, x)); }
+inline float DPL2FSDecoder::sign(const double x) {
   return static_cast<float>(x < 0 ? -1 : x > 0 ? 1 : 0);
 }
 // get the distance of the soundfield edge, along a given angle
-inline double DPL2FSDecoder::edgedistance(double a) {
+inline double DPL2FSDecoder::edgedistance(const double a) {
   return min(sqrt(1 + sqr(tan(a))), sqrt(1 + sqr(1 / tan(a))));
 }
 // get the index (and fractional offset!) in a piecewise-linear channel
@@ -153,7 +152,7 @@ int DPL2FSDecoder::map_to_grid(double &x) {
 }
 
 // decode a block of data and overlap-add it into outbuf
-void DPL2FSDecoder::buffered_decode(float *input) {
+void DPL2FSDecoder::buffered_decode(const float *input) {
   // demultiplex and apply window function
   for (unsigned int k = 0; k < N; k++) {
     lt[k] = wnd[k] * input[k * 2 + 0];
@@ -242,7 +241,7 @@ void DPL2FSDecoder::buffered_decode(float *input) {
 }
 
 // transform amp/phase difference space into x/y soundfield space
-void DPL2FSDecoder::transform_decode(double a, double p, double &x, double &y) {
+void DPL2FSDecoder::transform_decode(const double a, const double p, double &x, double &y) {
   x = clamp(1.0047 * a + 0.46804 * a * p * p * p - 0.2042 * a * p * p * p * p +
             0.0080586 * a * p * p * p * p * p * p * p -
             0.0001526 * a * p * p * p * p * p * p * p * p * p * p -
@@ -293,12 +292,12 @@ void DPL2FSDecoder::transform_circular_wrap(double &x, double &y,
 }
 
 // apply a focus transformation to some position
-void DPL2FSDecoder::transform_focus(double &x, double &y, double focus) {
+void DPL2FSDecoder::transform_focus(double &x, double &y, const double focus) {
   if (focus == 0)
     return;
+  const double ang = atan2(x, y);
   // translate into edge-normalized polar coordinates
-  double ang = atan2(x, y),
-         len = clamp(sqrt(x * x + y * y) / edgedistance(ang));
+  double len = clamp(sqrt(x * x + y * y) / edgedistance(ang));
   // apply focus
   len = focus > 0 ? 1 - pow(1 - len, 1 + focus * 20) : pow(len, 1 - focus * 20);
   // back-transform into euclidian soundfield position

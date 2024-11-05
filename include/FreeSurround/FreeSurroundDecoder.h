@@ -86,7 +86,7 @@ public:
   // @return A pointer to an internal buffer of exactly blocksize (multiplexed)
   // multichannel samples. The actual number of values depends on the number of
   // output channels in the chosen channel setup.
-  float *decode(float *input);
+  float *decode(const float *input);
 
   // Flush the internal buffer.
   void flush();
@@ -195,7 +195,7 @@ private:
   int map_to_grid(double &x);
 
   // decode a block of data and overlap-add it into outbuf
-  void buffered_decode(float *input);
+  void buffered_decode(const float *input);
 
   // transform amp/phase difference space into x/y soundfield space
   void transform_decode(double a, double p, double &x, double &y);
