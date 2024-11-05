@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define CHANNELMAPS_H
 #include "FreeSurroundDecoder.h"
 #include <map>
-#include <vector>
 
 const int grid_res = 21; // resolution of the lookup grid
 

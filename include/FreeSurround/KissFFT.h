@@ -2,7 +2,6 @@
 #define KISS_FFT_H
 
 #include <cmath>
-#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
