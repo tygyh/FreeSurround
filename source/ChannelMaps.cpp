@@ -1098,18 +1098,12 @@ bool init_maps() {
   chn_id[cs_5point1] = std::vector<channel_id>(
       &map_5point1_id[0],
       &map_5point1_id[sizeof(map_5point1_id) / sizeof(map_5point1_id[0])]);
-  chn_alloc[cs_5point1].push_back(
-      std::vector<float *>(&map_5point1_lf[0], &map_5point1_lf[21]));
-  chn_alloc[cs_5point1].push_back(
-      std::vector<float *>(&map_5point1_cf[0], &map_5point1_cf[21]));
-  chn_alloc[cs_5point1].push_back(
-      std::vector<float *>(&map_5point1_rf[0], &map_5point1_rf[21]));
-  chn_alloc[cs_5point1].push_back(
-      std::vector<float *>(&map_5point1_ls[0], &map_5point1_ls[21]));
-  chn_alloc[cs_5point1].push_back(
-      std::vector<float *>(&map_5point1_rs[0], &map_5point1_rs[21]));
-  chn_alloc[cs_5point1].push_back(
-      std::vector<float *>(&map_lfe_lfe[0], &map_lfe_lfe[21]));
+  chn_alloc[cs_5point1].emplace_back(&map_5point1_lf[0], &map_5point1_lf[21]);
+  chn_alloc[cs_5point1].emplace_back(&map_5point1_cf[0], &map_5point1_cf[21]);
+  chn_alloc[cs_5point1].emplace_back(&map_5point1_rf[0], &map_5point1_rf[21]);
+  chn_alloc[cs_5point1].emplace_back(&map_5point1_ls[0], &map_5point1_ls[21]);
+  chn_alloc[cs_5point1].emplace_back(&map_5point1_rs[0], &map_5point1_rs[21]);
+  chn_alloc[cs_5point1].emplace_back(&map_lfe_lfe[0], &map_lfe_lfe[21]);
 
   chn_angle[cs_7point1] = std::vector<float>(
       &map_7point1_ang[0],
@@ -1123,22 +1117,14 @@ bool init_maps() {
   chn_id[cs_7point1] = std::vector<channel_id>(
       &map_7point1_id[0],
       &map_7point1_id[sizeof(map_7point1_id) / sizeof(map_7point1_id[0])]);
-  chn_alloc[cs_7point1].push_back(
-      std::vector<float *>(&map_7point1_lf[0], &map_7point1_lf[21]));
-  chn_alloc[cs_7point1].push_back(
-      std::vector<float *>(&map_7point1_cf[0], &map_7point1_cf[21]));
-  chn_alloc[cs_7point1].push_back(
-      std::vector<float *>(&map_7point1_rf[0], &map_7point1_rf[21]));
-  chn_alloc[cs_7point1].push_back(
-      std::vector<float *>(&map_7point1_lsm[0], &map_7point1_lsm[21]));
-  chn_alloc[cs_7point1].push_back(
-      std::vector<float *>(&map_7point1_rsm[0], &map_7point1_rsm[21]));
-  chn_alloc[cs_7point1].push_back(
-      std::vector<float *>(&map_7point1_ls[0], &map_7point1_ls[21]));
-  chn_alloc[cs_7point1].push_back(
-      std::vector<float *>(&map_7point1_rs[0], &map_7point1_rs[21]));
-  chn_alloc[cs_7point1].push_back(
-      std::vector<float *>(&map_lfe_lfe[0], &map_lfe_lfe[21]));
+  chn_alloc[cs_7point1].emplace_back(&map_7point1_lf[0], &map_7point1_lf[21]);
+  chn_alloc[cs_7point1].emplace_back(&map_7point1_cf[0], &map_7point1_cf[21]);
+  chn_alloc[cs_7point1].emplace_back(&map_7point1_rf[0], &map_7point1_rf[21]);
+  chn_alloc[cs_7point1].emplace_back(&map_7point1_lsm[0], &map_7point1_lsm[21]);
+  chn_alloc[cs_7point1].emplace_back(&map_7point1_rsm[0], &map_7point1_rsm[21]);
+  chn_alloc[cs_7point1].emplace_back(&map_7point1_ls[0], &map_7point1_ls[21]);
+  chn_alloc[cs_7point1].emplace_back(&map_7point1_rs[0], &map_7point1_rs[21]);
+  chn_alloc[cs_7point1].emplace_back(&map_lfe_lfe[0], &map_lfe_lfe[21]);
 
   return true;
 }
