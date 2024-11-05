@@ -75,7 +75,7 @@ kiss_fftr_cfg kiss_fftr_alloc(int nfft, int inverse_fft, void *mem,
     return nullptr;
 
   st->substate = (kiss_fft_cfg)(st + 1); /*just beyond kiss_fftr_state struct */
-  st->tmpbuf = (kiss_fft_cpx *)(((char *)st->substate) + subsize);
+  st->tmpbuf = (kiss_fft_cpx *)((char *)st->substate + subsize);
   st->super_twiddles = st->tmpbuf + nfft;
   kiss_fft_alloc(nfft, inverse_fft, st->substate, &subsize);
 

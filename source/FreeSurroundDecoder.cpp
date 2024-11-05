@@ -137,7 +137,7 @@ inline float DPL2FSDecoder::max(double a, double b) {
 }
 inline float DPL2FSDecoder::clamp(double x) { return max(-1, min(1, x)); }
 inline float DPL2FSDecoder::sign(double x) {
-  return static_cast<float>(x < 0 ? -1 : (x > 0 ? 1 : 0));
+  return static_cast<float>(x < 0 ? -1 : x > 0 ? 1 : 0);
 }
 // get the distance of the soundfield edge, along a given angle
 inline double DPL2FSDecoder::edgedistance(double a) {
@@ -146,7 +146,7 @@ inline double DPL2FSDecoder::edgedistance(double a) {
 // get the index (and fractional offset!) in a piecewise-linear channel
 // allocation grid
 int DPL2FSDecoder::map_to_grid(double &x) {
-  double gp = ((x + 1) * 0.5) * (grid_res - 1),
+  double gp = (x + 1) * 0.5 * (grid_res - 1),
          i = min(grid_res - 2, floor(gp));
   x = gp - i;
   return static_cast<int>(i);
@@ -171,7 +171,7 @@ void DPL2FSDecoder::buffered_decode(float *input) {
     double phaseL = phase(lf[f]), phaseR = phase(rf[f]);
     // calculate the amplitude & phase differences
     double ampDiff =
-        clamp((ampL + ampR < epsilon) ? 0 : (ampR - ampL) / (ampR + ampL));
+        clamp(ampL + ampR < epsilon ? 0 : (ampR - ampL) / (ampR + ampL));
     double phaseDiff = abs(phaseL - phaseR);
     if (phaseDiff > pi)
       phaseDiff = 2 * pi - phaseDiff;
@@ -222,7 +222,7 @@ void DPL2FSDecoder::buffered_decode(float *input) {
       signal[C - 1][f] = lfe_level * polar(amp_total, phase_of[1]);
       // subtract the signal from the other channels
       for (unsigned int c = 0; c < C - 1; c++)
-        signal[c][f] *= (1 - lfe_level);
+        signal[c][f] *= 1 - lfe_level;
     }
   }
 
@@ -284,8 +284,8 @@ void DPL2FSDecoder::transform_circular_wrap(double &x, double &y,
     ang *= refangle / baseangle;
   else
     // angle falls within the rear region (to be shrunken)
-    ang = pi - (-(((refangle - 2 * pi) * (pi - abs(ang)) * sign(ang)) /
-                  (2 * pi - baseangle)));
+    ang = pi - -((refangle - 2 * pi) * (pi - abs(ang)) * sign(ang) /
+      (2 * pi - baseangle));
   // translate back into soundfield position
   len = len * edgedistance(ang);
   x = clamp(sin(ang) * len);
