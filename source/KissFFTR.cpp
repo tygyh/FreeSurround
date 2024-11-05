@@ -51,20 +51,20 @@ struct kiss_fftr_state {
 kiss_fftr_cfg kiss_fftr_alloc(int nfft, int inverse_fft, void *mem,
                               size_t *lenmem) {
   int i;
-  kiss_fftr_cfg st = NULL;
+  kiss_fftr_cfg st = nullptr;
   size_t subsize = 65536 * 4, memneeded = 0;
 
   if (nfft & 1) {
     fprintf(stderr, "Real FFT optimization must be even.\n");
-    return NULL;
+    return nullptr;
   }
   nfft >>= 1;
 
-  kiss_fft_alloc(nfft, inverse_fft, NULL, &subsize);
+  kiss_fft_alloc(nfft, inverse_fft, nullptr, &subsize);
   memneeded = sizeof(struct kiss_fftr_state) + subsize +
               sizeof(kiss_fft_cpx) * (nfft * 3 / 2);
 
-  if (lenmem == NULL) {
+  if (lenmem == nullptr) {
     st = (kiss_fftr_cfg)malloc(memneeded);
   } else {
     if (*lenmem >= memneeded)
@@ -72,7 +72,7 @@ kiss_fftr_cfg kiss_fftr_alloc(int nfft, int inverse_fft, void *mem,
     *lenmem = memneeded;
   }
   if (!st)
-    return NULL;
+    return nullptr;
 
   st->substate = (kiss_fft_cfg)(st + 1); /*just beyond kiss_fftr_state struct */
   st->tmpbuf = (kiss_fft_cpx *)(((char *)st->substate) + subsize);

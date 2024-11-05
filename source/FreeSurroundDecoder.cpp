@@ -50,8 +50,8 @@ void DPL2FSDecoder::Init(channel_setup chsetup, unsigned int blsize,
     dst = std::vector<double>(N);
     lf = std::vector<cplx>(N / 2 + 1);
     rf = std::vector<cplx>(N / 2 + 1);
-    forward = kiss_fftr_alloc(N, 0, 0, 0);
-    inverse = kiss_fftr_alloc(N, 1, 0, 0);
+    forward = kiss_fftr_alloc(N, 0, nullptr, nullptr);
+    inverse = kiss_fftr_alloc(N, 1, nullptr, nullptr);
     C = static_cast<unsigned int>(chn_alloc[setup].size());
 
     // Allocate per-channel buffers
@@ -93,7 +93,7 @@ float *DPL2FSDecoder::decode(float *input) {
     buffer_empty = false;
     return &outbuf[0];
   }
-  return 0;
+  return nullptr;
 }
 
 // flush the internal buffers
