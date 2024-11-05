@@ -1142,7 +1142,3 @@ bool init_maps() {
 
   return true;
 }
-
-namespace {
-bool success = init_maps();
-};
