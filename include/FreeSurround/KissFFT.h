@@ -1,10 +1,10 @@
 #ifndef KISS_FFT_H
 #define KISS_FFT_H
 
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #ifdef __cplusplus
 extern "C" {

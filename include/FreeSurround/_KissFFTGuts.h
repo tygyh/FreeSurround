@@ -41,7 +41,7 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    and defines
    typedef struct { kiss_fft_scalar r; kiss_fft_scalar i; }kiss_fft_cpx; */
 #include "KissFFT.h"
-#include <limits.h>
+#include <climits>
 
 #define MAXFACTORS 32
 /* e.g. an fft of length 128 has 4 factors
