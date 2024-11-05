@@ -2,7 +2,6 @@
 #define KISS_FTR_H
 
 #include <cmath>
-#include <cstdio>
 #include <cstdlib>
 
 #include "KissFFT.h"
