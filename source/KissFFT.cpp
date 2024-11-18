@@ -36,6 +36,8 @@ ARISING IN ANY WAY OUT OF
 THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <vector>
+
 #include "../include/FreeSurround/_KissFFTGuts.h"
 /* The guts header contains all the multiplication and addition macros that are
  defined for
@@ -456,16 +458,31 @@ void kiss_fft(kiss_fft_cfg cfg, const kiss_fft_cpx *fin, kiss_fft_cpx *fout) { k
  * @return The smallest integer greater than or equal to `n` 
  *         divisible only by the primes 2, 3, and 5.
  */
-int kiss_fft_next_fast_size(int n)
+int kiss_fft_next_fast_size(const int n)
 {
-    while (true)
-    {
-        int m = n;
-        for (int f = 2; f <= 5; f++) // Loop through factors 2, 3, and 5
-            while (m % f == 0)
-                m /= f;
-        if (m == 1)
-            return n; // n is factorable by 2, 3, and 5
-        n++;
+    std::vector hammingNumbers = {1}; // Start with 1 as the smallest Hamming number
+    int i2 = 0, i3 = 0, i5 = 0;       // Pointers for multiples of 2, 3, and 5
+
+    while (true) {
+        // Generate the next candidates by multiplying with 2, 3, and 5
+        int next2 = hammingNumbers[i2] * 2;
+        int next3 = hammingNumbers[i3] * 3;
+        int next5 = hammingNumbers[i5] * 5;
+
+        // Find the smallest candidate
+        int nextHamming = std::ranges::min({next2, next3, next5});
+
+        // If the candidate is >= n, return it
+        if (nextHamming >= n) {
+            return nextHamming;
+        }
+
+        // Add the smallest candidate to the list
+        hammingNumbers.push_back(nextHamming);
+
+        // Increment the respective pointer(s)
+        if (nextHamming == next2) i2++;
+        if (nextHamming == next3) i3++;
+        if (nextHamming == next5) i5++;
     }
 }
