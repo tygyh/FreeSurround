@@ -269,7 +269,7 @@ void DPL2FSDecoder::transform_circular_wrap(double &x, double &y, double refangl
     if (refangle == 90)
         return;
     refangle = refangle * pi / 180;
-    const double baseangle = 90 * pi / 180;
+    const double baseangle = pi / 2;
     // translate into edge-normalized polar coordinates
     double ang = atan2(x, y), len = sqrt(x * x + y * y);
     len = len / edgedistance(ang);
