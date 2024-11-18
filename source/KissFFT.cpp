@@ -36,7 +36,7 @@ ARISING IN ANY WAY OUT OF
 THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "FreeSurround/_KissFFTGuts.h"
+#include "../include/FreeSurround/_KissFFTGuts.h"
 /* The guts header contains all the multiplication and addition macros that are
  defined for
  fixed or floating point complex numbers.  It also delares the kf_ internal

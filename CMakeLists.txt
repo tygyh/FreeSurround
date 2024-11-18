@@ -1,21 +1,12 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.29)
 project(FreeSurround)
 
-# Set Boost root directory
-set(BOOST_ROOT "../boost_1_86_0")
+set(CMAKE_CXX_STANDARD 23)
 
-# Link Boost libraries
-target_link_libraries(freesurround_exe Boost::filesystem Boost::thread)
-
-if (NOT MSVC)
-  set(CMAKE_CXX_STANDARD 14)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-  set(CMAKE_CXX_EXTENSIONS OFF)
-endif()
-
-set(SRCS
-  source/ChannelMaps.cpp
-  source/KissFFT.cpp
-  source/KissFFTR.cpp
-  source/FreeSurroundDecoder.cpp
-)
+add_library(FreeSurround STATIC
+        source/ChannelMaps.cpp
+        include/FreeSurround/_KissFFTGuts.h
+        include/FreeSurround/ChannelMaps.h
+        source/KissFFT.cpp
+        source/FreeSurroundDecoder.cpp
+        source/KissFFTR.cpp)

@@ -38,8 +38,8 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <cstdio>
 
-#include "FreeSurround/KissFFTR.h"
-#include "FreeSurround/_KissFFTGuts.h"
+#include "../include/FreeSurround/KissFFTR.h"
+#include "../include/FreeSurround/_KissFFTGuts.h"
 
 struct kiss_fftr_state
 {

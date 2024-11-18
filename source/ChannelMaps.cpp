@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "FreeSurround/ChannelMaps.h"
+#include "../include/FreeSurround/ChannelMaps.h"
 
 float map_5point1_ang[] = {-27, 0, 27, -105, 105};
 float map_5point1_xsf[] = {-1, 0, 1, -1, 1};
