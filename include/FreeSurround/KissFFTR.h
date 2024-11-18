@@ -1,5 +1,4 @@
-#ifndef KISS_FTR_H
-#define KISS_FTR_H
+#pragma once
 
 #include <cmath>
 #include <cstdlib>
@@ -46,5 +45,4 @@ void kiss_fftri(kiss_fftr_cfg cfg, const kiss_fft_cpx* freqdata,
 
 #ifdef __cplusplus
 }
-#endif
 #endif

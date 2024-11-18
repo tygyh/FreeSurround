@@ -1,5 +1,4 @@
-#ifndef KISS_FFT_H
-#define KISS_FFT_H
+#pragma once
 
 #include <cmath>
 #include <cstdlib>
@@ -126,6 +125,4 @@ int kiss_fft_next_fast_size(int n);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

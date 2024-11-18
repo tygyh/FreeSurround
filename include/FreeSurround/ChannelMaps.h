@@ -15,9 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+#pragma once
 
-#ifndef CHANNELMAPS_H
-#define CHANNELMAPS_H
 #include "FreeSurroundDecoder.h"
 #include <map>
 
@@ -31,5 +30,3 @@ extern std::map<unsigned, std::vector<float>> chn_angle;
 extern std::map<unsigned, std::vector<float>> chn_xsf;
 extern std::map<unsigned, std::vector<float>> chn_ysf;
 extern std::map<unsigned, std::vector<channel_id>> chn_id;
-
-#endif

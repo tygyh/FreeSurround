@@ -40,6 +40,7 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    defines kiss_fft_scalar as either short or a float type
    and defines
    typedef struct { kiss_fft_scalar r; kiss_fft_scalar i; }kiss_fft_cpx; */
+#pragma once
 #include "KissFFT.h"
 
 #define MAXFACTORS 32

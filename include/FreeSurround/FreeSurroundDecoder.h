@@ -14,9 +14,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
 // USA.
+#pragma once
 
-#ifndef FREESURROUND_DECODER_H
-#define FREESURROUND_DECODER_H
 #include "KissFFTR.h"
 #include <complex>
 #include <vector>
@@ -209,4 +208,3 @@ private:
   // apply a focus transformation to some position
   void transform_focus(double& x, double& y, double focus);
 };
-#endif
