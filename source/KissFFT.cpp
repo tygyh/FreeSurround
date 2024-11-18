@@ -447,20 +447,25 @@ void kiss_fft_stride(kiss_fft_cfg st, const kiss_fft_cpx *fin, kiss_fft_cpx *fou
 
 void kiss_fft(kiss_fft_cfg cfg, const kiss_fft_cpx *fin, kiss_fft_cpx *fout) { kiss_fft_stride(cfg, fin, fout, 1); }
 
+/**
+ * Finds the next largest integer that can be expressed as a product of 
+ * the prime factors 2, 3, and 5. This ensures the number is factorable 
+ * by these primes, making it suitable for optimized FFT computations.
+ *
+ * @param n The starting integer to search from.
+ * @return The smallest integer greater than or equal to `n` 
+ *         divisible only by the primes 2, 3, and 5.
+ */
 int kiss_fft_next_fast_size(int n)
 {
-    while (1)
+    while (true)
     {
         int m = n;
-        while (m % 2 == 0)
-            m /= 2;
-        while (m % 3 == 0)
-            m /= 3;
-        while (m % 5 == 0)
-            m /= 5;
-        if (m <= 1)
-            break; /* n is completely factorable by twos, threes, and fives */
+        for (int f = 2; f <= 5; f++) // Loop through factors 2, 3, and 5
+            while (m % f == 0)
+                m /= f;
+        if (m == 1)
+            return n; // n is factorable by 2, 3, and 5
         n++;
     }
-    return n;
 }
