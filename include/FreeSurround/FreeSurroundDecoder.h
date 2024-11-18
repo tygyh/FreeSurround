@@ -111,7 +111,6 @@ public:
 
 private:
   // constants
-  const float pi = 3.141592654f;
   const float epsilon = 0.000001f;
 
   // number of samples per input/output block, number of output channels

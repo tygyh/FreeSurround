@@ -3,6 +3,9 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
+#include <numbers>
+
+using std::numbers::pi;
 
 #ifdef __cplusplus
 extern "C" {
