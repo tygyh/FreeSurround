@@ -39,66 +39,65 @@ DPL2FSDecoder::~DPL2FSDecoder()
 
 void DPL2FSDecoder::Init(const channel_setup chsetup, const unsigned int blsize, const unsigned int sample_rate)
 {
-    if (!initialized)
-    {
-        setup = chsetup;
-        N = blsize;
-        samplerate = sample_rate;
+    if (initialized)
+        return;
 
-        // Initialize the parameters
-        wnd = std::vector<double>(N);
-        inbuf = std::vector<float>(3 * N);
-        lt = std::vector<double>(N);
-        rt = std::vector<double>(N);
-        dst = std::vector<double>(N);
-        lf = std::vector<cplx>(N / 2 + 1);
-        rf = std::vector<cplx>(N / 2 + 1);
-        forward = kiss_fftr_alloc(N, 0, nullptr, nullptr);
-        inverse = kiss_fftr_alloc(N, 1, nullptr, nullptr);
-        C = static_cast<unsigned int>(chn_alloc[setup].size());
+    setup = chsetup;
+    N = blsize;
+    samplerate = sample_rate;
 
-        // Allocate per-channel buffers
-        outbuf.resize((N + N / 2) * C);
-        signal.resize(C, std::vector<cplx>(N));
+    // Initialize the parameters
+    wnd = std::vector<double>(N);
+    inbuf = std::vector<float>(3 * N);
+    lt = std::vector<double>(N);
+    rt = std::vector<double>(N);
+    dst = std::vector<double>(N);
+    lf = std::vector<cplx>(N / 2 + 1);
+    rf = std::vector<cplx>(N / 2 + 1);
+    forward = kiss_fftr_alloc(N, 0, nullptr, nullptr);
+    inverse = kiss_fftr_alloc(N, 1, nullptr, nullptr);
+    C = static_cast<unsigned int>(chn_alloc[setup].size());
 
-        // Init the window function
-        for (unsigned int k = 0; k < N; k++)
-            wnd[k] = sqrt(0.5 * (1 - cos(2 * pi * k / N)) / N);
+    // Allocate per-channel buffers
+    outbuf.resize((N + N / 2) * C);
+    signal.resize(C, std::vector<cplx>(N));
 
-        // set default parameters
-        set_circular_wrap(90);
-        set_shift(0);
-        set_depth(1);
-        set_focus(0);
-        set_center_image(1);
-        set_front_separation(1);
-        set_rear_separation(1);
-        set_low_cutoff(40.0f / samplerate * 2);
-        set_high_cutoff(90.0f / samplerate * 2);
-        set_bass_redirection(false);
+    // Init the window function
+    for (unsigned int k = 0; k < N; k++)
+        wnd[k] = sqrt(0.5 * (1 - cos(2 * pi * k / N)) / N);
 
-        initialized = true;
-    }
+    // set default parameters
+    set_circular_wrap(90);
+    set_shift(0);
+    set_depth(1);
+    set_focus(0);
+    set_center_image(1);
+    set_front_separation(1);
+    set_rear_separation(1);
+    set_low_cutoff(40.0f / samplerate * 2);
+    set_high_cutoff(90.0f / samplerate * 2);
+    set_bass_redirection(false);
+
+    initialized = true;
 }
 
 // decode a stereo chunk, produces a multichannel chunk of the same size
 // (lagged)
 float *DPL2FSDecoder::decode(const float *input)
 {
-    if (initialized)
-    {
-        // append incoming data to the end of the input buffer
-        memcpy(&inbuf[N], &input[0], 8 * N);
-        // process first and second half, overlapped
-        buffered_decode(&inbuf[0]);
-        buffered_decode(&inbuf[N]);
-        // shift last half of the input to the beginning (for overlapping with a
-        // future block)
-        memcpy(&inbuf[0], &inbuf[2 * N], 4 * N);
-        buffer_empty = false;
-        return &outbuf[0];
-    }
-    return nullptr;
+    if (!initialized)
+        return nullptr;
+
+    // append incoming data to the end of the input buffer
+    memcpy(&inbuf[N], &input[0], 8 * N);
+    // process first and second half, overlapped
+    buffered_decode(&inbuf[0]);
+    buffered_decode(&inbuf[N]);
+    // shift last half of the input to the beginning (for overlapping with a
+    // future block)
+    memcpy(&inbuf[0], &inbuf[2 * N], 4 * N);
+    buffer_empty = false;
+    return &outbuf[0];
 }
 
 // flush the internal buffers
