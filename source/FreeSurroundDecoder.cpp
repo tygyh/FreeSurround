@@ -17,8 +17,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "../include/FreeSurround/FreeSurroundDecoder.h"
-#include <cmath>
 #include "../include/FreeSurround/ChannelMaps.h"
+
+#include <cmath>
 
 #undef min
 #undef max

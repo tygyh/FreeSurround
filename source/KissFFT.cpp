@@ -36,9 +36,10 @@ ARISING IN ANY WAY OUT OF
 THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "../include/FreeSurround/_KissFFTGuts.h"
+
 #include <vector>
 
-#include "../include/FreeSurround/_KissFFTGuts.h"
 /* The guts header contains all the multiplication and addition macros that are
  defined for
  fixed or floating point complex numbers.  It also delares the kf_ internal
@@ -450,20 +451,21 @@ void kiss_fft_stride(kiss_fft_cfg st, const kiss_fft_cpx *fin, kiss_fft_cpx *fou
 void kiss_fft(kiss_fft_cfg cfg, const kiss_fft_cpx *fin, kiss_fft_cpx *fout) { kiss_fft_stride(cfg, fin, fout, 1); }
 
 /**
- * Finds the next largest integer that can be expressed as a product of 
- * the prime factors 2, 3, and 5. This ensures the number is factorable 
+ * Finds the next largest integer that can be expressed as a product of
+ * the prime factors 2, 3, and 5. This ensures the number is factorable
  * by these primes, making it suitable for optimized FFT computations.
  *
  * @param n The starting integer to search from.
- * @return The smallest integer greater than or equal to `n` 
+ * @return The smallest integer greater than or equal to `n`
  *         divisible only by the primes 2, 3, and 5.
  */
 int kiss_fft_next_fast_size(const int n)
 {
     std::vector hammingNumbers = {1}; // Start with 1 as the smallest Hamming number
-    int i2 = 0, i3 = 0, i5 = 0;       // Pointers for multiples of 2, 3, and 5
+    int i2 = 0, i3 = 0, i5 = 0; // Pointers for multiples of 2, 3, and 5
 
-    while (true) {
+    while (true)
+    {
         // Generate the next candidates by multiplying with 2, 3, and 5
         int next2 = hammingNumbers[i2] * 2;
         int next3 = hammingNumbers[i3] * 3;
@@ -473,7 +475,8 @@ int kiss_fft_next_fast_size(const int n)
         int nextHamming = std::ranges::min({next2, next3, next5});
 
         // If the candidate is >= n, return it
-        if (nextHamming >= n) {
+        if (nextHamming >= n)
+        {
             return nextHamming;
         }
 
@@ -481,8 +484,11 @@ int kiss_fft_next_fast_size(const int n)
         hammingNumbers.push_back(nextHamming);
 
         // Increment the respective pointer(s)
-        if (nextHamming == next2) i2++;
-        if (nextHamming == next3) i3++;
-        if (nextHamming == next5) i5++;
+        if (nextHamming == next2)
+            i2++;
+        if (nextHamming == next3)
+            i3++;
+        if (nextHamming == next5)
+            i5++;
     }
 }

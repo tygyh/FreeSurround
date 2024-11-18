@@ -17,13 +17,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include "FreeSurroundDecoder.h"
 #include <map>
+#include "FreeSurroundDecoder.h"
 
 constexpr int grid_res = 21; // resolution of the lookup grid
 
 // channel allocation maps (per setup)
-typedef std::vector<std::vector<float*>> alloc_lut;
+typedef std::vector<std::vector<float *>> alloc_lut;
 extern std::map<unsigned, alloc_lut> chn_alloc;
 // channel metadata maps (per setup)
 extern std::map<unsigned, std::vector<float>> chn_angle;
