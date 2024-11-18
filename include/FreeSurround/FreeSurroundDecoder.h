@@ -199,7 +199,9 @@ private:
   void buffered_decode(const float* input);
 
   // transform amp/phase difference space into x/y soundfield space
-  void transform_decode(double a, double p, double& x, double& y);
+  std::tuple<double, double> transform_decode(double amp, double phase);
+  static float calculate_x(double amp, double phase);
+  static float calculate_y(double amp, double phase);
 
   // apply a circular_wrap transformation to some position
   void transform_circular_wrap(double& x, double& y, double refangle);

@@ -181,8 +181,7 @@ void DPL2FSDecoder::buffered_decode(const float *input)
             phaseDiff = 2 * pi - phaseDiff;
 
         // decode into x/y soundfield position
-        double x, y;
-        transform_decode(ampDiff, phaseDiff, x, y);
+        auto [x, y] = transform_decode(ampDiff, phaseDiff);
         // add wrap control
         transform_circular_wrap(x, y, circular_wrap);
         // add shift control
@@ -244,23 +243,32 @@ void DPL2FSDecoder::buffered_decode(const float *input)
 }
 
 // transform amp/phase difference space into x/y soundfield space
-void DPL2FSDecoder::transform_decode(const double a, const double p, double &x, double &y)
+std::tuple<double, double> DPL2FSDecoder::transform_decode(const double a, const double p)
 {
-    x = clamp(1.0047 * a + 0.46804 * a * p * p * p - 0.2042 * a * p * p * p * p +
-              0.0080586 * a * p * p * p * p * p * p * p - 0.0001526 * a * p * p * p * p * p * p * p * p * p * p -
-              0.073512 * a * a * a * p - 0.2499 * a * a * a * p * p * p * p +
-              0.016932 * a * a * a * p * p * p * p * p * p * p -
-              0.00027707 * a * a * a * p * p * p * p * p * p * p * p * p * p +
-              0.048105 * a * a * a * a * a * p * p * p * p * p * p * p -
-              0.0065947 * a * a * a * a * a * p * p * p * p * p * p * p * p * p * p +
-              0.0016006 * a * a * a * a * a * p * p * p * p * p * p * p * p * p * p * p -
-              0.0071132 * a * a * a * a * a * a * a * p * p * p * p * p * p * p * p * p +
-              0.0022336 * a * a * a * a * a * a * a * p * p * p * p * p * p * p * p * p * p * p -
-              0.0004804 * a * a * a * a * a * a * a * p * p * p * p * p * p * p * p * p * p * p * p);
-    y = clamp(0.98592 - 0.62237 * p + 0.077875 * p * p - 0.0026929 * p * p * p * p * p + 0.4971 * a * a * p -
-              0.00032124 * a * a * p * p * p * p * p * p +
-              9.2491e-006 * a * a * a * a * p * p * p * p * p * p * p * p * p * p +
-              0.051549 * a * a * a * a * a * a * a * a + 1.0727e-014 * a * a * a * a * a * a * a * a * a * a);
+    return std::make_tuple(calculate_x(a, p), calculate_y(a, p));
+}
+
+float DPL2FSDecoder::calculate_x(const double amp, const double phase)
+{
+    const double ap3 = amp * pow(phase, 3), ap4 = amp * pow(phase, 4), ap7 = amp * pow(phase, 7),
+                 ap8 = amp * pow(phase, 8), a3p = pow(amp, 3) * phase, a3p4 = pow(amp, 3) * pow(phase, 4),
+                 a3p7 = pow(amp, 3) * pow(phase, 7), a3p12 = pow(amp, 3) * pow(phase, 7),
+                 a5p7 = pow(amp, 5) * pow(phase, 7), a5p12 = pow(amp, 5) * pow(phase, 12),
+                 a5p15 = pow(amp, 5) * pow(phase, 15), a7p9 = pow(amp, 7) * pow(phase, 9),
+                 a7p15 = pow(amp, 7) * pow(phase, 15), a8p16 = pow(amp, 8) * pow(phase, 16);
+
+    return clamp(1.0047 * amp + 0.46804 * ap3 - 0.2042 * ap4 + 0.0080586 * ap7 - 0.0001526 * ap8 - 0.073512 * a3p +
+                 0.2499 * a3p4 - 0.016932 * a3p7 + 0.00027707 * a3p12 + 0.048105 * a5p7 - 0.0065947 * a5p12 +
+                 0.0016006 * a5p15 - 0.0071132 * a7p9 + 0.0022336 * a7p15 - 0.0004804 * a8p16);
+}
+
+float DPL2FSDecoder::calculate_y(const double amp, const double phase)
+{
+    const double p2 = pow(phase, 2), p5 = pow(phase, 5), a2p = pow(amp, 2) * phase, a2p6 = pow(amp, 2) * pow(phase, 6),
+                 a4p7 = pow(amp, 4) * pow(phase, 7), a8 = pow(amp, 8), a10 = pow(amp, 10);
+
+    return clamp(0.98592 - 0.62237 * phase + 0.077875 * p2 - 0.0026929 * p5 + 0.4971 * a2p - 0.00032124 * a2p6 +
+                 9.2491e-006 * a4p7 + 0.051549 * a8 + 1.0727e-014 * a10);
 }
 
 // apply a circular_wrap transformation to some position
