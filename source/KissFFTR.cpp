@@ -97,7 +97,7 @@ kiss_fftr_cfg kiss_fftr_alloc(int nfft, const int inverse_fft, void *mem, size_t
 void kiss_fftr(kiss_fftr_cfg st, const kiss_fft_scalar *timedata, kiss_fft_cpx *freqdata)
 {
     /* input buffer timedata is stored row-wise */
-    kiss_fft_cpx fpnk, fpk, f1k, f2k, tw, tdc;
+    kiss_fft_cpx tdc;
 
     if (st->substate->inverse)
     {
@@ -135,7 +135,8 @@ void kiss_fftr(kiss_fftr_cfg st, const kiss_fft_scalar *timedata, kiss_fft_cpx *
 
     for (int k = 1; k <= ncfft / 2; ++k)
     {
-        fpk = st->tmpbuf[k];
+        kiss_fft_cpx fpnk, f1k, f2k, tw;
+        kiss_fft_cpx fpk = st->tmpbuf[k];
         fpnk.r = st->tmpbuf[ncfft - k].r;
         fpnk.i = -st->tmpbuf[ncfft - k].i;
         C_FIXDIV(fpk, 2);

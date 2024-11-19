@@ -50,10 +50,10 @@ static void kf_bfly2(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
 {
     kiss_fft_cpx *Fout2;
     kiss_fft_cpx *tw1 = st->twiddles;
-    kiss_fft_cpx t;
     Fout2 = Fout + m;
     do
     {
+        kiss_fft_cpx t;
         C_FIXDIV(*Fout, 2);
         C_FIXDIV(*Fout2, 2);
 
@@ -70,7 +70,6 @@ static void kf_bfly2(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
 static void kf_bfly4(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cfg st, const size_t m)
 {
     kiss_fft_cpx *tw1, *tw2, *tw3;
-    kiss_fft_cpx scratch[6];
     size_t k = m;
     const size_t m2 = 2 * m;
     const size_t m3 = 3 * m;
@@ -79,6 +78,7 @@ static void kf_bfly4(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
 
     do
     {
+        kiss_fft_cpx scratch[6];
         C_FIXDIV(*Fout, 4);
         C_FIXDIV(Fout[m], 4);
         C_FIXDIV(Fout[m2], 4);
@@ -122,7 +122,6 @@ static void kf_bfly3(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
     size_t k = m;
     const size_t m2 = 2 * m;
     kiss_fft_cpx *tw1, *tw2;
-    kiss_fft_cpx scratch[5];
     kiss_fft_cpx epi3;
     epi3 = st->twiddles[fstride * m];
 
@@ -130,6 +129,7 @@ static void kf_bfly3(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
 
     do
     {
+        kiss_fft_cpx scratch[5];
         C_FIXDIV(*Fout, 3);
         C_FIXDIV(Fout[m], 3);
         C_FIXDIV(Fout[m2], 3);
@@ -230,7 +230,6 @@ static void kf_bfly_generic(kiss_fft_cpx *Fout, const size_t fstride, const kiss
 {
     int u, k, q1, q;
     kiss_fft_cpx *twiddles = st->twiddles;
-    kiss_fft_cpx t;
     int Norig = st->nfft;
 
     kiss_fft_cpx *scratch = static_cast<kiss_fft_cpx *>(KISS_FFT_TMP_ALLOC(sizeof(kiss_fft_cpx) * p));
@@ -252,6 +251,7 @@ static void kf_bfly_generic(kiss_fft_cpx *Fout, const size_t fstride, const kiss
             Fout[k] = scratch[0];
             for (q = 1; q < p; ++q)
             {
+                kiss_fft_cpx t;
                 twidx += static_cast<int>(fstride) * k;
                 if (twidx >= Norig)
                     twidx -= Norig;
