@@ -48,9 +48,8 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static void kf_bfly2(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cfg st, int m)
 {
-    kiss_fft_cpx *Fout2;
     kiss_fft_cpx *tw1 = st->twiddles;
-    Fout2 = Fout + m;
+    kiss_fft_cpx *Fout2 = Fout + m;
     do
     {
         kiss_fft_cpx t;
@@ -122,8 +121,7 @@ static void kf_bfly3(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
     size_t k = m;
     const size_t m2 = 2 * m;
     kiss_fft_cpx *tw1, *tw2;
-    kiss_fft_cpx epi3;
-    epi3 = st->twiddles[fstride * m];
+    kiss_fft_cpx epi3 = st->twiddles[fstride * m];
 
     tw1 = tw2 = st->twiddles;
 
@@ -162,23 +160,14 @@ static void kf_bfly3(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
 
 static void kf_bfly5(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cfg st, const int m)
 {
-    kiss_fft_cpx *Fout0, *Fout1, *Fout2, *Fout3, *Fout4;
-    int u;
+    kiss_fft_cpx *Fout0 = Fout, *Fout1 = Fout0 + m, *Fout2 = Fout0 + 2 * m, *Fout3 = Fout0 + 3 * m,
+                 *Fout4 = Fout0 + 4 * m;
     kiss_fft_cpx scratch[13];
     kiss_fft_cpx *twiddles = st->twiddles;
-    kiss_fft_cpx *tw;
-    kiss_fft_cpx ya, yb;
-    ya = twiddles[fstride * m];
-    yb = twiddles[fstride * 2 * m];
+    kiss_fft_cpx *tw = st->twiddles;
+    kiss_fft_cpx ya = twiddles[fstride * m], yb = twiddles[fstride * 2 * m];
 
-    Fout0 = Fout;
-    Fout1 = Fout0 + m;
-    Fout2 = Fout0 + 2 * m;
-    Fout3 = Fout0 + 3 * m;
-    Fout4 = Fout0 + 4 * m;
-
-    tw = st->twiddles;
-    for (u = 0; u < m; ++u)
+    for (int u = 0; u < m; ++u)
     {
         C_FIXDIV(*Fout0, 5);
         C_FIXDIV(*Fout1, 5);
@@ -228,37 +217,37 @@ static void kf_bfly5(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
 /* perform the butterfly for one stage of a mixed radix FFT */
 static void kf_bfly_generic(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cfg st, const int m, const int p)
 {
-    int u, k, q1, q;
+    int q1;
     kiss_fft_cpx *twiddles = st->twiddles;
     int Norig = st->nfft;
 
     kiss_fft_cpx *scratch = static_cast<kiss_fft_cpx *>(KISS_FFT_TMP_ALLOC(sizeof(kiss_fft_cpx) * p));
 
-    for (u = 0; u < m; ++u)
+    for (int u = 0; u < m; ++u)
     {
-        k = u;
+        int i = u;
         for (q1 = 0; q1 < p; ++q1)
         {
-            scratch[q1] = Fout[k];
+            scratch[q1] = Fout[i];
             C_FIXDIV(scratch[q1], p);
-            k += m;
+            i += m;
         }
 
-        k = u;
+        int j = u;
         for (q1 = 0; q1 < p; ++q1)
         {
             int twidx = 0;
-            Fout[k] = scratch[0];
-            for (q = 1; q < p; ++q)
+            Fout[j] = scratch[0];
+            for (int q = 1; q < p; ++q)
             {
                 kiss_fft_cpx t;
-                twidx += static_cast<int>(fstride) * k;
+                twidx += static_cast<int>(fstride) * j;
                 if (twidx >= Norig)
                     twidx -= Norig;
                 C_MUL(t, scratch[q], twiddles[twidx]);
-                C_ADDTO(Fout[k], t);
+                C_ADDTO(Fout[j], t);
             }
-            k += m;
+            j += m;
         }
     }
     KISS_FFT_TMP_FREE(scratch);
@@ -417,11 +406,10 @@ kiss_fft_cfg kiss_fft_alloc(const int nfft, const int inverse_fft, void *mem, si
     {
         return st;
     }
-    int i;
     st->nfft = nfft;
     st->inverse = inverse_fft;
 
-    for (i = 0; i < nfft; ++i)
+    for (int i = 0; i < nfft; ++i)
     {
         double phase = -2 * pi * i / nfft;
         if (st->inverse)
