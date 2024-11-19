@@ -2,7 +2,6 @@
 
 #include <cmath>
 #include <cstdlib>
-#include <cstring>
 #include <numbers>
 
 using std::abs;
