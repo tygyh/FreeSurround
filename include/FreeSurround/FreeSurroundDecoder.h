@@ -190,19 +190,19 @@ private:
 
     // get the index (and fractional offset!) in a piecewise-linear channel
     // allocation grid
-    int map_to_grid(double &x);
+    static int map_to_grid(double &x);
 
     // decode a block of data and overlap-add it into outbuf
     void buffered_decode(const float *input);
 
     // transform amp/phase difference space into x/y soundfield space
-    std::tuple<double, double> transform_decode(double amp, double phase);
+    static std::tuple<double, double> transform_decode(double amp, double phase);
     static float calculate_x(double amp, double phase);
     static float calculate_y(double amp, double phase);
 
     // apply a circular_wrap transformation to some position
-    void transform_circular_wrap(double &x, double &y, double refangle);
+    static void transform_circular_wrap(double &x, double &y, double refangle);
 
     // apply a focus transformation to some position
-    void transform_focus(double &x, double &y, double focus);
+    static void transform_focus(double &x, double &y, double focus);
 };
