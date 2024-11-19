@@ -38,6 +38,8 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../include/FreeSurround/_KissFFTGuts.h"
 
+#include <numeric>
+#include <random>
 #include <vector>
 
 /* The guts header contains all the multiplication and addition macros that are
@@ -342,41 +344,77 @@ static void kf_work(kiss_fft_cpx *Fout, const kiss_fft_cpx *f, const size_t fstr
     }
 }
 
-/*  facbuf is populated by p1,m1,p2,m2, ...
-    where
-    p[i] * m[i] = m[i-1]
-    m0 = n                  */
-static void kf_factor(int n, int *facbuf)
+/**
+ * @brief Implements Pollard's Rho algorithm to find a non-trivial factor of n.
+ *
+ * This function uses Pollard's Rho algorithm, a probabilistic integer factorization method.
+ * The algorithm generates a sequence of numbers based on a quadratic recurrence and uses the
+ * "tortoise and hare" technique to detect cycles. If a cycle is detected, the GCD of the
+ * difference between two sequence values and n is computed, which yields a factor of n.
+ *
+ * If n is even, the function immediately returns 2. Otherwise, the algorithm iterates
+ * until it finds a non-trivial factor or determines that no factor exists.
+ *
+ * @param n The integer to factor. The function will return a non-trivial factor of n.
+ *
+ * @return A non-trivial factor of n if found, otherwise 0 if no factor is found.
+ */
+int pollards_rho(const int n)
 {
-    int p = 4;
-    double floor_sqrt;
-    floor_sqrt = floor(sqrt(n));
+    if (n % 2 == 0)
+        return 2;
 
-    /*factor out powers of 4, powers of 2, then any remaining primes */
-    do
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution dist(1, n - 1);
+
+    int64_t x = dist(gen);
+    int64_t y = x;
+    const int64_t c = dist(gen);
+    int64_t d = 1;
+
+    while (d == 1)
     {
-        while (n % p)
-        {
-            switch (p)
-            {
-            case 4:
-                p = 2;
-                break;
-            case 2:
-                p = 3;
-                break;
-            default:
-                p += 2;
-                break;
-            }
-            if (p > floor_sqrt)
-                p = n; /* no more factors, skip to end */
-        }
-        n /= p;
-        *facbuf++ = p;
-        *facbuf++ = n;
+        x = (x * x + c) % n;
+        y = (y * y + c) % n;
+        y = (y * y + c) % n;
+        d = std::gcd(std::llabs(x - y), static_cast<int64_t>(n));
     }
-    while (n > 1);
+
+    return d == n ? 0 : static_cast<int>(d);
+}
+
+/**
+ * @brief Factorizes a number using Pollard's Rho algorithm.
+ *
+ * This function attempts to factor the given number `n` by repeatedly calling
+ * the Pollard's Rho algorithm. It continuously divides `n` by each found factor and
+ * stores the factors in the provided `facbuf` array. This method returns the prime
+ * factors of `n` and updates the array with factor pairs: each factor and the quotient
+ * of `n` after dividing by the factor.
+ *
+ * The factorization process continues until all factors of `n` are found, or until
+ * Pollard's Rho fails to find further factors.
+ *
+ * @param n The integer to factor. It will be reduced during the process.
+ * @param facbuf A pointer to an array where the factors will be stored. The factors are
+ *               stored as pairs: each factor and the quotient of n after dividing by the factor.
+ */
+void kf_factor(int n, int *facbuf)
+{
+    while (n > 1)
+    {
+        const int factor = pollards_rho(n);
+        if (factor == 0)
+            break;
+
+        while (n % factor == 0)
+        {
+            n /= factor;
+            *facbuf++ = factor;
+            *facbuf++ = n;
+        }
+    }
 }
 
 /*
