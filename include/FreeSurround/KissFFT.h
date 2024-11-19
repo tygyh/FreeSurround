@@ -5,6 +5,8 @@
 #include <cstring>
 #include <numbers>
 
+using std::abs;
+using std::sqrt;
 using std::numbers::pi;
 
 #ifdef __cplusplus

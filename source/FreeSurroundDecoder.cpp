@@ -75,8 +75,8 @@ void DPL2FSDecoder::Init(const channel_setup chsetup, const unsigned int blsize,
     set_center_image(1);
     set_front_separation(1);
     set_rear_separation(1);
-    set_low_cutoff(40.0f / samplerate * 2);
-    set_high_cutoff(90.0f / samplerate * 2);
+    set_low_cutoff(40.0f / static_cast<float>(samplerate) * 2);
+    set_high_cutoff(90.0f / static_cast<float>(samplerate) * 2);
     set_bass_redirection(false);
 
     initialized = true;
@@ -120,8 +120,8 @@ void DPL2FSDecoder::set_focus(const float v) { focus = v; }
 void DPL2FSDecoder::set_center_image(const float v) { center_image = v; }
 void DPL2FSDecoder::set_front_separation(const float v) { front_separation = v; }
 void DPL2FSDecoder::set_rear_separation(const float v) { rear_separation = v; }
-void DPL2FSDecoder::set_low_cutoff(const float v) { lo_cut = v * (N / 2); }
-void DPL2FSDecoder::set_high_cutoff(const float v) { hi_cut = v * (N / 2); }
+void DPL2FSDecoder::set_low_cutoff(const float v) { lo_cut = v * static_cast<float>(N / 2.0); }
+void DPL2FSDecoder::set_high_cutoff(const float v) { hi_cut = v * static_cast<float>(N / 2.0); }
 void DPL2FSDecoder::set_bass_redirection(const bool v) { use_lfe = v; }
 
 // helper functions
@@ -215,16 +215,18 @@ void DPL2FSDecoder::buffered_decode(const float *input)
         }
 
         // optionally redirect bass
-        if (use_lfe && f < hi_cut)
-        {
-            // level of LFE channel according to normalized frequency
-            double lfe_level = f < lo_cut ? 1 : 0.5 * (1 + cos(pi * (f - lo_cut) / (hi_cut - lo_cut)));
-            // assign LFE channel
-            signal[C - 1][f] = lfe_level * polar(amp_total, phase_of[1]);
-            // subtract the signal from the other channels
-            for (unsigned int c = 0; c < C - 1; c++)
-                signal[c][f] *= 1 - lfe_level;
-        }
+        if (!use_lfe)
+            continue;
+        const auto w = static_cast<float>(f);
+        if (w >= hi_cut)
+            continue;
+        // level of LFE channel according to normalized frequency
+        double lfe_level = w < lo_cut ? 1 : 0.5 * (1 + cos(pi * (w - lo_cut) / (hi_cut - lo_cut)));
+        // assign LFE channel
+        signal[C - 1][f] = lfe_level * polar(amp_total, phase_of[1]);
+        // subtract the signal from the other channels
+        for (unsigned int c = 0; c < C - 1; c++)
+            signal[c][f] *= 1 - lfe_level;
     }
 
     // shift the last 2/3 to the first 2/3 of the output buffer
