@@ -221,7 +221,7 @@ static void kf_bfly_generic(kiss_fft_cpx *Fout, const size_t fstride, const kiss
     const kiss_fft_cpx *twiddles = st->twiddles;
     const int Norig = st->nfft;
 
-    auto scratch = static_cast<kiss_fft_cpx *>(KISS_FFT_TMP_ALLOC(sizeof(kiss_fft_cpx) * p));
+    const auto scratch = static_cast<kiss_fft_cpx *>(KISS_FFT_TMP_ALLOC(sizeof(kiss_fft_cpx) * p));
 
     for (int u = 0; u < m; ++u)
     {
