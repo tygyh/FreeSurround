@@ -223,7 +223,7 @@ static void kf_bfly_generic(kiss_fft_cpx *Fout, const size_t fstride, const kiss
     const kiss_fft_cpx *twiddles = st->twiddles;
     const int Norig = st->nfft;
 
-    kiss_fft_cpx *scratch = static_cast<kiss_fft_cpx *>(KISS_FFT_TMP_ALLOC(sizeof(kiss_fft_cpx) * p));
+    auto scratch = static_cast<kiss_fft_cpx *>(KISS_FFT_TMP_ALLOC(sizeof(kiss_fft_cpx) * p));
 
     for (int u = 0; u < m; ++u)
     {
@@ -468,7 +468,7 @@ void kiss_fft_stride(kiss_fft_cfg st, const kiss_fft_cpx *fin, kiss_fft_cpx *fou
     }
     // NOTE: this is not really an in-place FFT algorithm.
     // It just performs an out-of-place FFT into a temp buffer
-    kiss_fft_cpx *tmpbuf = static_cast<kiss_fft_cpx *>(KISS_FFT_TMP_ALLOC(sizeof(kiss_fft_cpx) * st->nfft));
+    auto *tmpbuf = static_cast<kiss_fft_cpx *>(KISS_FFT_TMP_ALLOC(sizeof(kiss_fft_cpx) * st->nfft));
     kf_work(tmpbuf, fin, 1, in_stride, st->factors, st);
     memcpy(fout, tmpbuf, sizeof(kiss_fft_cpx) * st->nfft);
     KISS_FFT_TMP_FREE(tmpbuf);
