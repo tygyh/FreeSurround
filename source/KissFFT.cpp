@@ -117,7 +117,7 @@ static void kf_bfly4(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
     while (--k);
 }
 
-static void kf_bfly3(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cfg st, size_t m)
+static void kf_bfly3(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cfg st, const size_t m)
 {
     size_t k = m;
     const size_t m2 = 2 * m;
@@ -160,7 +160,7 @@ static void kf_bfly3(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
     while (--k);
 }
 
-static void kf_bfly5(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cfg st, int m)
+static void kf_bfly5(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cfg st, const int m)
 {
     kiss_fft_cpx *Fout0, *Fout1, *Fout2, *Fout3, *Fout4;
     int u;
@@ -226,7 +226,7 @@ static void kf_bfly5(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
 }
 
 /* perform the butterfly for one stage of a mixed radix FFT */
-static void kf_bfly_generic(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cfg st, int m, int p)
+static void kf_bfly_generic(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cfg st, const int m, const int p)
 {
     int u, k, q1, q;
     kiss_fft_cpx *twiddles = st->twiddles;
@@ -398,7 +398,7 @@ static void kf_factor(int n, int *facbuf)
  * such,
  * It can be freed with free(), rather than a kiss_fft-specific function.
  * */
-kiss_fft_cfg kiss_fft_alloc(int nfft, const int inverse_fft, void *mem, size_t *lenmem)
+kiss_fft_cfg kiss_fft_alloc(const int nfft, const int inverse_fft, void *mem, size_t *lenmem)
 {
     kiss_fft_cfg st = nullptr;
     size_t memneeded = sizeof(struct kiss_fft_state) + sizeof(kiss_fft_cpx) * (nfft - 1); /* twiddle factors*/
@@ -448,7 +448,10 @@ void kiss_fft_stride(kiss_fft_cfg st, const kiss_fft_cpx *fin, kiss_fft_cpx *fou
     KISS_FFT_TMP_FREE(tmpbuf);
 }
 
-void kiss_fft(kiss_fft_cfg cfg, const kiss_fft_cpx *fin, kiss_fft_cpx *fout) { kiss_fft_stride(cfg, fin, fout, 1); }
+void kiss_fft(const kiss_fft_cfg cfg, const kiss_fft_cpx *fin, kiss_fft_cpx *fout)
+{
+    kiss_fft_stride(cfg, fin, fout, 1);
+}
 
 /**
  * Finds the next largest integer that can be expressed as a product of
