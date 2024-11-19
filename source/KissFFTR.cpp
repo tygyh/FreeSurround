@@ -136,7 +136,7 @@ void kiss_fftr(kiss_fftr_cfg st, const kiss_fft_scalar *timedata, kiss_fft_cpx *
     for (int k = 1; k <= ncfft / 2; ++k)
     {
         kiss_fft_cpx fpnk, f1k, f2k, tw;
-        kiss_fft_cpx fpk = st->tmpbuf[k];
+        const kiss_fft_cpx fpk = st->tmpbuf[k];
         fpnk.r = st->tmpbuf[ncfft - k].r;
         fpnk.i = -st->tmpbuf[ncfft - k].i;
         C_FIXDIV(fpk, 2);
@@ -172,7 +172,7 @@ void kiss_fftri(kiss_fftr_cfg st, const kiss_fft_cpx *freqdata, kiss_fft_scalar 
     for (int k = 1; k <= ncfft / 2; ++k)
     {
         kiss_fft_cpx fnkc, fek, fok, tmp;
-        kiss_fft_cpx fk = freqdata[k];
+        const kiss_fft_cpx fk = freqdata[k];
         fnkc.r = freqdata[ncfft - k].r;
         fnkc.i = -freqdata[ncfft - k].i;
         C_FIXDIV(fk, 2);

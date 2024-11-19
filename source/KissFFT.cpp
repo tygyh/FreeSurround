@@ -48,7 +48,7 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static void kf_bfly2(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cfg st, int m)
 {
-    kiss_fft_cpx *tw1 = st->twiddles;
+    const kiss_fft_cpx *tw1 = st->twiddles;
     kiss_fft_cpx *Fout2 = Fout + m;
     do
     {
@@ -121,7 +121,7 @@ static void kf_bfly3(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
     size_t k = m;
     const size_t m2 = 2 * m;
     kiss_fft_cpx *tw1, *tw2;
-    kiss_fft_cpx epi3 = st->twiddles[fstride * m];
+    const kiss_fft_cpx epi3 = st->twiddles[fstride * m];
 
     tw1 = tw2 = st->twiddles;
 
@@ -163,8 +163,8 @@ static void kf_bfly5(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
     kiss_fft_cpx *Fout0 = Fout, *Fout1 = Fout0 + m, *Fout2 = Fout0 + 2 * m, *Fout3 = Fout0 + 3 * m,
                  *Fout4 = Fout0 + 4 * m;
     kiss_fft_cpx scratch[13];
-    kiss_fft_cpx *twiddles = st->twiddles;
-    kiss_fft_cpx *tw = st->twiddles;
+    const kiss_fft_cpx *twiddles = st->twiddles;
+    const kiss_fft_cpx *tw = st->twiddles;
     kiss_fft_cpx ya = twiddles[fstride * m], yb = twiddles[fstride * 2 * m];
 
     for (int u = 0; u < m; ++u)
@@ -218,8 +218,8 @@ static void kf_bfly5(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
 static void kf_bfly_generic(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cfg st, const int m, const int p)
 {
     int q1;
-    kiss_fft_cpx *twiddles = st->twiddles;
-    int Norig = st->nfft;
+    const kiss_fft_cpx *twiddles = st->twiddles;
+    const int Norig = st->nfft;
 
     kiss_fft_cpx *scratch = static_cast<kiss_fft_cpx *>(KISS_FFT_TMP_ALLOC(sizeof(kiss_fft_cpx) * p));
 
@@ -390,7 +390,7 @@ static void kf_factor(int n, int *facbuf)
 kiss_fft_cfg kiss_fft_alloc(const int nfft, const int inverse_fft, void *mem, size_t *lenmem)
 {
     kiss_fft_cfg st = nullptr;
-    size_t memneeded = sizeof(struct kiss_fft_state) + sizeof(kiss_fft_cpx) * (nfft - 1); /* twiddle factors*/
+    const size_t memneeded = sizeof(struct kiss_fft_state) + sizeof(kiss_fft_cpx) * (nfft - 1); /* twiddle factors*/
 
     if (lenmem == nullptr)
     {
