@@ -72,8 +72,7 @@ static void kf_bfly4(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
 {
     kiss_fft_cpx *tw1, *tw2, *tw3;
     size_t k = m;
-    const size_t m2 = 2 * m;
-    const size_t m3 = 3 * m;
+    const size_t m2 = 2 * m, m3 = 3 * m;
 
     tw3 = tw2 = tw1 = st->twiddles;
 
@@ -165,9 +164,8 @@ static void kf_bfly5(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
     kiss_fft_cpx *Fout0 = Fout, *Fout1 = Fout0 + m, *Fout2 = Fout0 + 2 * m, *Fout3 = Fout0 + 3 * m,
                  *Fout4 = Fout0 + 4 * m;
     kiss_fft_cpx scratch[13];
-    const kiss_fft_cpx *twiddles = st->twiddles;
-    const kiss_fft_cpx *tw = st->twiddles;
-    kiss_fft_cpx ya = twiddles[fstride * m], yb = twiddles[fstride * 2 * m];
+    const kiss_fft_cpx *twiddles = st->twiddles, *tw = st->twiddles, ya = twiddles[fstride * m],
+                       yb = twiddles[fstride * 2 * m];
 
     for (int u = 0; u < m; ++u)
     {
