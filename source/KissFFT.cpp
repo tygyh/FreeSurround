@@ -123,7 +123,7 @@ static void kf_bfly3(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
     size_t k = m;
     const size_t m2 = 2 * m;
     kiss_fft_cpx *tw1, *tw2;
-    const kiss_fft_cpx epi3 = st->twiddles[fstride * m];
+    const auto [r, i] = st->twiddles[fstride * m];
 
     tw1 = tw2 = st->twiddles;
 
@@ -145,7 +145,7 @@ static void kf_bfly3(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
         Fout[m].r = Fout->r - HALF_OF(scratch[3].r);
         Fout[m].i = Fout->i - HALF_OF(scratch[3].i);
 
-        C_MULBYSCALAR(scratch[0], epi3.i);
+        C_MULBYSCALAR(scratch[0], i);
 
         C_ADDTO(*Fout, scratch[3]);
 
