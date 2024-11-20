@@ -457,18 +457,18 @@ kiss_fft_cfg kiss_fft_alloc(const int nfft, const int inverse_fft, void *mem, si
     return st;
 }
 
-void kiss_fft_stride(kiss_fft_cfg st, const kiss_fft_cpx *fin, kiss_fft_cpx *fout, int in_stride)
+void kiss_fft_stride(kiss_fft_cfg cfg, const kiss_fft_cpx *fin, kiss_fft_cpx *fout, int fin_stride)
 {
     if (fin != fout)
     {
-        kf_work(fout, fin, 1, in_stride, st->factors, st);
+        kf_work(fout, fin, 1, fin_stride, cfg->factors, cfg);
         return;
     }
     // NOTE: this is not really an in-place FFT algorithm.
     // It just performs an out-of-place FFT into a temp buffer
-    auto *tmpbuf = static_cast<kiss_fft_cpx *>(KISS_FFT_TMP_ALLOC(sizeof(kiss_fft_cpx) * st->nfft));
-    kf_work(tmpbuf, fin, 1, in_stride, st->factors, st);
-    memcpy(fout, tmpbuf, sizeof(kiss_fft_cpx) * st->nfft);
+    auto *tmpbuf = static_cast<kiss_fft_cpx *>(KISS_FFT_TMP_ALLOC(sizeof(kiss_fft_cpx) * cfg->nfft));
+    kf_work(tmpbuf, fin, 1, fin_stride, cfg->factors, cfg);
+    memcpy(fout, tmpbuf, sizeof(kiss_fft_cpx) * cfg->nfft);
     KISS_FFT_TMP_FREE(tmpbuf);
 }
 
