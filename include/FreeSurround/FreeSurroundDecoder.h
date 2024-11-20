@@ -75,7 +75,7 @@ public:
     DPL2FSDecoder();
     ~DPL2FSDecoder();
 
-    void Init(channel_setup setup = cs_5point1, unsigned int blocksize = 4096, unsigned int samplerate = 48000);
+    void Init(channel_setup chsetup = cs_5point1, unsigned int blocksize = 4096, unsigned int sample_rate = 48000);
 
     // Decode a chunk of stereo sound. The output is delayed by half of the
     // blocksize. This function is the only one needed for straightforward

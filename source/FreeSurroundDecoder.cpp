@@ -39,13 +39,13 @@ DPL2FSDecoder::~DPL2FSDecoder()
     kiss_fftr_free(inverse);
 }
 
-void DPL2FSDecoder::Init(const channel_setup chsetup, const unsigned int blsize, const unsigned int sample_rate)
+void DPL2FSDecoder::Init(const channel_setup chsetup, const unsigned int blocksize, const unsigned int sample_rate)
 {
     if (initialized)
         return;
 
     setup = chsetup;
-    N = blsize;
+    N = blocksize;
     samplerate = sample_rate;
 
     // Initialize the parameters
@@ -247,9 +247,9 @@ void DPL2FSDecoder::buffered_decode(const float *input)
 }
 
 // transform amp/phase difference space into x/y soundfield space
-std::tuple<double, double> DPL2FSDecoder::transform_decode(const double a, const double p)
+std::tuple<double, double> DPL2FSDecoder::transform_decode(const double amp, const double phase)
 {
-    return std::make_tuple(calculate_x(a, p), calculate_y(a, p));
+    return std::make_tuple(calculate_x(amp, phase), calculate_y(amp, phase));
 }
 
 float DPL2FSDecoder::calculate_x(const double amp, const double phase)
