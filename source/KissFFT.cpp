@@ -50,7 +50,7 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static void kf_bfly2(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cfg st, int m)
 {
-    const kiss_fft_cpx *tw1 = st->twiddles;
+    const kiss_fft_cpx *tw1 = st->twiddles.data();
     kiss_fft_cpx *Fout2 = Fout + m;
     do
     {
@@ -74,11 +74,11 @@ static void kf_bfly4(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
     size_t k = m;
     const size_t m2 = 2 * m, m3 = 3 * m;
 
-    tw3 = tw2 = tw1 = st->twiddles;
+    tw3 = tw2 = tw1 = st->twiddles.data();
 
     do
     {
-        kiss_fft_cpx scratch[6];
+        std::array<kiss_fft_cpx, 6> scratch;
         C_FIXDIV(*Fout, 4);
         C_FIXDIV(Fout[m], 4);
         C_FIXDIV(Fout[m2], 4);
@@ -124,11 +124,11 @@ static void kf_bfly3(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
     kiss_fft_cpx *tw1, *tw2;
     const auto [r, i] = st->twiddles[fstride * m];
 
-    tw1 = tw2 = st->twiddles;
+    tw1 = tw2 = st->twiddles.data();
 
     do
     {
-        kiss_fft_cpx scratch[5];
+        std::array<kiss_fft_cpx, 5> scratch;
         C_FIXDIV(*Fout, 3);
         C_FIXDIV(Fout[m], 3);
         C_FIXDIV(Fout[m2], 3);
@@ -163,8 +163,8 @@ static void kf_bfly5(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
 {
     kiss_fft_cpx *Fout0 = Fout, *Fout1 = Fout0 + m, *Fout2 = Fout0 + 2 * m, *Fout3 = Fout0 + 3 * m,
                  *Fout4 = Fout0 + 4 * m;
-    kiss_fft_cpx scratch[13];
-    const kiss_fft_cpx *twiddles = st->twiddles, *tw = st->twiddles, ya = twiddles[fstride * m],
+    std::array<kiss_fft_cpx, 13> scratch;
+    const kiss_fft_cpx *twiddles = st->twiddles.data(), *tw = st->twiddles.data(), ya = twiddles[fstride * m],
                        yb = twiddles[fstride * 2 * m];
 
     for (int u = 0; u < m; ++u)
@@ -218,7 +218,7 @@ static void kf_bfly5(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
 static void kf_bfly_generic(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cfg st, const int m, const int p)
 {
     int q1;
-    const kiss_fft_cpx *twiddles = st->twiddles;
+    const kiss_fft_cpx *twiddles = st->twiddles.data();
     const int Norig = st->nfft;
 
     const auto scratch = static_cast<kiss_fft_cpx *>(KISS_FFT_TMP_ALLOC(sizeof(kiss_fft_cpx) * p));
@@ -450,10 +450,10 @@ kiss_fft_cfg kiss_fft_alloc(const int nfft, const int inverse_fft, void *mem, si
         double phase = -2 * pi * i / nfft;
         if (st->inverse)
             phase *= -1;
-        kf_cexp(st->twiddles + i, phase);
+        kf_cexp(st->twiddles.data() + i, phase);
     }
 
-    kf_factor(nfft, st->factors);
+    kf_factor(nfft, st->factors.data());
     return st;
 }
 
@@ -461,13 +461,13 @@ void kiss_fft_stride(kiss_fft_cfg cfg, const kiss_fft_cpx *fin, kiss_fft_cpx *fo
 {
     if (fin != fout)
     {
-        kf_work(fout, fin, 1, fin_stride, cfg->factors, cfg);
+        kf_work(fout, fin, 1, fin_stride, cfg->factors.data(), cfg);
         return;
     }
     // NOTE: this is not really an in-place FFT algorithm.
     // It just performs an out-of-place FFT into a temp buffer
     auto *tmpbuf = static_cast<kiss_fft_cpx *>(KISS_FFT_TMP_ALLOC(sizeof(kiss_fft_cpx) * cfg->nfft));
-    kf_work(tmpbuf, fin, 1, fin_stride, cfg->factors, cfg);
+    kf_work(tmpbuf, fin, 1, fin_stride, cfg->factors.data(), cfg);
     memcpy(fout, tmpbuf, sizeof(kiss_fft_cpx) * cfg->nfft);
     KISS_FFT_TMP_FREE(tmpbuf);
 }

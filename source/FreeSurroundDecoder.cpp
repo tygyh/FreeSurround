@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "../include/FreeSurround/FreeSurroundDecoder.h"
 #include "../include/FreeSurround/ChannelMaps.h"
 
+#include <array>
 #include <cmath>
 #include <cstring>
 
@@ -198,7 +199,7 @@ void DPL2FSDecoder::buffered_decode(const float *input)
         // get total signal amplitude
         const double amp_total = sqrt(ampL * ampL + ampR * ampR);
         // and total L/C/R signal phases
-        const double phase_of[] = {phaseL, atan2(lf[f].imag() + rf[f].imag(), lf[f].real() + rf[f].real()), phaseR};
+        const std::array phase_of = {phaseL, atan2(lf[f].imag() + rf[f].imag(), lf[f].real() + rf[f].real()), phaseR};
         // compute 2d channel map indexes p/q and update x/y to fractional offsets
         // in the map grid
         const int p = map_to_grid(x), q = map_to_grid(y);

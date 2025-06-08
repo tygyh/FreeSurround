@@ -43,6 +43,8 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 #include "KissFFT.h"
 
+#include <array>
+
 #define MAXFACTORS 32
 /* e.g. an fft of length 128 has 4 factors
  as far as kissfft is concerned
@@ -53,8 +55,8 @@ struct kiss_fft_state
 {
     int nfft;
     int inverse;
-    int factors[2 * MAXFACTORS];
-    kiss_fft_cpx twiddles[1];
+    std::array<int, 2 * MAXFACTORS> factors;
+    std::array<kiss_fft_cpx, 1> twiddles;
 };
 
 /*
