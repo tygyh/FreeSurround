@@ -20,14 +20,13 @@
 #include <vector>
 #include "KissFFTR.h"
 
-typedef std::complex<double> cplx;
+using cplx = std::complex<double>;
 
 // Identifiers for the supported output channels (from front to back, left to
 // right). The ordering here also determines the ordering of interleaved
 // samples in the output signal.
 
-typedef enum channel_id
-{
+using channel_id = enum {
     ci_none = 0,
     ci_front_left = 1 << 1,
     ci_front_center_left = 1 << 2,
@@ -46,18 +45,17 @@ typedef enum channel_id
     ci_back_center_right = 1 << 15,
     ci_back_right = 1 << 16,
     ci_lfe = 1 << 31
-} channel_id;
+};
 
 // The supported output channel setups. A channel setup is defined by the set
 // of channels that are present. Here is a graphic of the cs_5point1 setup:
 // http://en.wikipedia.org/wiki/File:5_1_channels_(surround_sound)_label.svg
-typedef enum channel_setup
-{
+using channel_setup = enum {
     cs_5point1 = ci_front_left | ci_front_center | ci_front_right | ci_back_left | ci_back_right | ci_lfe,
 
     cs_7point1 = ci_front_left | ci_front_center | ci_front_right | ci_side_center_left | ci_side_center_right |
         ci_back_left | ci_back_right | ci_lfe
-} channel_setup;
+};
 
 // The FreeSurround decoder.
 
