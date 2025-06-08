@@ -20,12 +20,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <array>
 
-std::array<float, 5> map_5point1_ang = {-27, 0, 27, -105, 105};
-std::array<float, 5> map_5point1_xsf = {-1, 0, 1, -1, 1};
-std::array<float, 5> map_5point1_ysf = {1, 1, 1, -1, -1};
-std::array map_5point1_id = {ci_front_left, ci_front_center, ci_front_right, ci_back_left, ci_back_right, ci_lfe};
+constexpr std::array<float, 5> map_5point1_ang = {-27, 0, 27, -105, 105};
+constexpr std::array<float, 5> map_5point1_xsf = {-1, 0, 1, -1, 1};
+constexpr std::array<float, 5> map_5point1_ysf = {1, 1, 1, -1, -1};
+constexpr std::array map_5point1_id = {ci_front_left, ci_front_center, ci_front_right,
+                                       ci_back_left,  ci_back_right,   ci_lfe};
 
-std::array<std::array<float, 21>, 21> map_5point1_lf = {
+constexpr std::array<std::array<float, 21>, 21> map_5point1_lf = {
     {{0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f},
@@ -84,7 +85,7 @@ std::array<std::array<float, 21>, 21> map_5point1_lf = {
       0.40402f,  0.27711f,  0.14046f,  0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f}}};
 
-std::array<std::array<float, 21>, 21> map_5point1_cf = {
+constexpr std::array<std::array<float, 21>, 21> map_5point1_cf = {
     {{0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f},
@@ -141,7 +142,7 @@ std::array<std::array<float, 21>, 21> map_5point1_cf = {
       0.67263f,     0.78467f,  0.89574f, 1.000000f, 0.89382f, 0.78261f,  0.67046f,
       0.55485f,     0.4464f,   0.34213f, 0.24558f,  0.15519f, 0.074014f, 0.000000f}}};
 
-std::array<std::array<float, 21>, 21> map_5point1_rf = {
+constexpr std::array<std::array<float, 21>, 21> map_5point1_rf = {
     {{0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f},
@@ -203,7 +204,7 @@ std::array<std::array<float, 21>, 21> map_5point1_rf = {
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.14292f,  0.27953f,  0.40639f,
       0.52748f,  0.63323f,  0.72837f,  0.81116f,  0.88423f,  0.94629f,  1.000000f}}};
 
-std::array<std::array<float, 21>, 21> map_5point1_ls = {
+constexpr std::array<std::array<float, 21>, 21> map_5point1_ls = {
     {{1.000000f, 0.99863f, 0.99396f, 0.98481f, 0.9703f, 0.94888f, 0.91914f, 0.88048f, 0.83195f,  0.77384f,     0.70834f,
       0.63338f,  0.55484f, 0.47562f, 0.39394f, 0.3173f, 0.24362f, 0.17537f, 0.11147f, 0.054079f, -7.8496e-017f},
      {0.99854f, 0.94804f, 0.94647f, 0.94043f, 0.92966f, 0.91177f, 0.87898f, 0.82659f, 0.76643f, 0.70248f, 0.63602f,
@@ -257,7 +258,7 @@ std::array<std::array<float, 21>, 21> map_5point1_ls = {
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f}}};
 
-std::array<std::array<float, 21>, 21> map_5point1_rs = {
+constexpr std::array<std::array<float, 21>, 21> map_5point1_rs = {
     {{-7.8496e-017f, 0.052336f, 0.10973f, 0.17365f, 0.24192f, 0.31565f, 0.39394f,
       0.47409f,      0.55484f,  0.63338f, 0.70587f, 0.77384f, 0.83195f, 0.87965f,
       0.91914f,      0.94832f,  0.96987f, 0.9845f,  0.99377f, 0.99854f, 1.000000f},
@@ -312,13 +313,13 @@ std::array<std::array<float, 21>, 21> map_5point1_rs = {
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, -7.8496e-017f}}};
 
-std::array<float, 7> map_7point1_ang = {-27, 0, 27, -95, 95, -142, 142};
-std::array<float, 7> map_7point1_xsf = {-1, 0, 1, -1, 1, -1, 1};
-std::array<float, 7> map_7point1_ysf = {1, 1, 1, 0, 0, -1, -1};
-channel_id map_7point1_id[] = {ci_front_left,        ci_front_center, ci_front_right, ci_side_center_left,
-                               ci_side_center_right, ci_back_left,    ci_back_right,  ci_lfe};
+constexpr std::array<float, 7> map_7point1_ang = {-27, 0, 27, -95, 95, -142, 142};
+constexpr std::array<float, 7> map_7point1_xsf = {-1, 0, 1, -1, 1, -1, 1};
+constexpr std::array<float, 7> map_7point1_ysf = {1, 1, 1, 0, 0, -1, -1};
+constexpr std::array map_7point1_id = {ci_front_left,        ci_front_center, ci_front_right, ci_side_center_left,
+                                       ci_side_center_right, ci_back_left,    ci_back_right,  ci_lfe};
 
-std::array<std::array<float, 21>, 21> map_7point1_lf = {
+constexpr std::array<std::array<float, 21>, 21> map_7point1_lf = {
     {{0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f},
@@ -377,7 +378,7 @@ std::array<std::array<float, 21>, 21> map_7point1_lf = {
       0.40402f,  0.27711f,  0.14046f,  0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f}}};
 
-std::array<std::array<float, 21>, 21> map_7point1_cf = {
+constexpr std::array<std::array<float, 21>, 21> map_7point1_cf = {
     {{0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f},
@@ -434,7 +435,7 @@ std::array<std::array<float, 21>, 21> map_7point1_cf = {
       0.67263f,     0.78467f,  0.89574f, 1.000000f, 0.89382f, 0.78261f,  0.67046f,
       0.55485f,     0.4464f,   0.34213f, 0.24558f,  0.15519f, 0.074014f, 0.000000f}}};
 
-std::array<std::array<float, 21>, 21> map_7point1_rf = {
+constexpr std::array<std::array<float, 21>, 21> map_7point1_rf = {
     {{0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f},
@@ -494,7 +495,7 @@ std::array<std::array<float, 21>, 21> map_7point1_rf = {
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.14292f,  0.27953f,  0.40639f,
       0.52748f,  0.63323f,  0.72837f,  0.81116f,  0.88423f,  0.94629f,  1.000000f}}};
 
-std::array<std::array<float, 21>, 21> map_7point1_lsm = {
+constexpr std::array<std::array<float, 21>, 21> map_7point1_lsm = {
     {{0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f},
@@ -559,7 +560,7 @@ std::array<std::array<float, 21>, 21> map_7point1_lsm = {
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f}}};
 
-std::array<std::array<float, 21>, 21> map_7point1_rsm = {
+constexpr std::array<std::array<float, 21>, 21> map_7point1_rsm = {
     {{0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f},
@@ -624,7 +625,7 @@ std::array<std::array<float, 21>, 21> map_7point1_rsm = {
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, -1.1102e-016f}}};
 
-std::array<std::array<float, 21>, 21> map_7point1_ls = {
+constexpr std::array<std::array<float, 21>, 21> map_7point1_ls = {
     {{1.000000f, 0.99863f, 0.99396f, 0.98481f, 0.9703f, 0.94888f, 0.91914f, 0.88048f, 0.83195f,  0.77384f,     0.70834f,
       0.63338f,  0.55484f, 0.47562f, 0.39394f, 0.3173f, 0.24362f, 0.17537f, 0.11147f, 0.054079f, -7.8496e-017f},
      {0.94446f, 0.81199f, 0.83616f, 0.85669f, 0.87092f, 0.87561f, 0.8564f,  0.80823f, 0.75425f, 0.69808f, 0.63602f,
@@ -678,7 +679,7 @@ std::array<std::array<float, 21>, 21> map_7point1_ls = {
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f}}};
 
-std::array<std::array<float, 21>, 21> map_7point1_rs = {
+constexpr std::array<std::array<float, 21>, 21> map_7point1_rs = {
     {{-7.8496e-017f, 0.052336f, 0.10973f, 0.17365f, 0.24192f, 0.31565f, 0.39394f,
       0.47409f,      0.55484f,  0.63338f, 0.70587f, 0.77384f, 0.83195f, 0.87965f,
       0.91914f,      0.94832f,  0.96987f, 0.9845f,  0.99377f, 0.99854f, 1.000000f},
@@ -733,7 +734,7 @@ std::array<std::array<float, 21>, 21> map_7point1_rs = {
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f}}};
 
-std::array<std::array<float, 21>, 21> map_lfe_lfe = {
+constexpr std::array<std::array<float, 21>, 21> map_lfe_lfe = {
     {{0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f},
@@ -798,37 +799,60 @@ std::array<std::array<float, 21>, 21> map_lfe_lfe = {
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f,
       0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f}}};
 
-std::map<unsigned, alloc_lut> chn_alloc;
-std::map<unsigned, std::vector<float>> chn_angle;
-std::map<unsigned, std::vector<float>> chn_xsf;
-std::map<unsigned, std::vector<float>> chn_ysf;
-std::map<unsigned, std::vector<channel_id>> chn_id;
-
-bool init_maps()
+std::map<unsigned, std::vector<float>> init_chn_angle()
 {
-    chn_angle[cs_5point1] = std::vector(std::begin(map_5point1_ang), std::end(map_5point1_ang));
-    chn_xsf[cs_5point1] = std::vector(std::begin(map_5point1_xsf), std::end(map_5point1_xsf));
-    chn_ysf[cs_5point1] = std::vector(std::begin(map_5point1_ysf), std::end(map_5point1_ysf));
-    chn_id[cs_5point1] = std::vector(std::begin(map_5point1_id), std::end(map_5point1_id));
-    chn_alloc[cs_5point1].emplace_back(&map_5point1_lf[0], &map_5point1_lf[21]);
-    chn_alloc[cs_5point1].emplace_back(&map_5point1_cf[0], &map_5point1_cf[21]);
-    chn_alloc[cs_5point1].emplace_back(&map_5point1_rf[0], &map_5point1_rf[21]);
-    chn_alloc[cs_5point1].emplace_back(&map_5point1_ls[0], &map_5point1_ls[21]);
-    chn_alloc[cs_5point1].emplace_back(&map_5point1_rs[0], &map_5point1_rs[21]);
-    chn_alloc[cs_5point1].emplace_back(&map_lfe_lfe[0], &map_lfe_lfe[21]);
-
-    chn_angle[cs_7point1] = std::vector(std::begin(map_7point1_ang), std::end(map_7point1_ang));
-    chn_xsf[cs_7point1] = std::vector(std::begin(map_7point1_xsf), std::end(map_7point1_xsf));
-    chn_ysf[cs_7point1] = std::vector(std::begin(map_7point1_ysf), std::end(map_7point1_ysf));
-    chn_id[cs_7point1] = std::vector(std::begin(map_7point1_id), std::end(map_7point1_id));
-    chn_alloc[cs_7point1].emplace_back(&map_7point1_lf[0], &map_7point1_lf[21]);
-    chn_alloc[cs_7point1].emplace_back(&map_7point1_cf[0], &map_7point1_cf[21]);
-    chn_alloc[cs_7point1].emplace_back(&map_7point1_rf[0], &map_7point1_rf[21]);
-    chn_alloc[cs_7point1].emplace_back(&map_7point1_lsm[0], &map_7point1_lsm[21]);
-    chn_alloc[cs_7point1].emplace_back(&map_7point1_rsm[0], &map_7point1_rsm[21]);
-    chn_alloc[cs_7point1].emplace_back(&map_7point1_ls[0], &map_7point1_ls[21]);
-    chn_alloc[cs_7point1].emplace_back(&map_7point1_rs[0], &map_7point1_rs[21]);
-    chn_alloc[cs_7point1].emplace_back(&map_lfe_lfe[0], &map_lfe_lfe[21]);
-
-    return true;
+    std::map<unsigned, std::vector<float>> temp_chn_angle;
+    temp_chn_angle[cs_5point1] = {std::begin(map_5point1_ang), std::end(map_5point1_ang)};
+    temp_chn_angle[cs_7point1] = {std::begin(map_7point1_ang), std::end(map_7point1_ang)};
+    return temp_chn_angle;
 }
+
+std::map<unsigned, std::vector<float>> init_chn_xsf()
+{
+    std::map<unsigned, std::vector<float>> temp_chn_xsf;
+    temp_chn_xsf[cs_5point1] = {std::begin(map_5point1_xsf), std::end(map_5point1_xsf)};
+    temp_chn_xsf[cs_7point1] = {std::begin(map_7point1_xsf), std::end(map_7point1_xsf)};
+    return temp_chn_xsf;
+}
+
+std::map<unsigned, std::vector<float>> init_chn_ysf()
+{
+    std::map<unsigned, std::vector<float>> temp_chn_ysf;
+    temp_chn_ysf[cs_5point1] = {std::begin(map_5point1_ysf), std::end(map_5point1_ysf)};
+    temp_chn_ysf[cs_7point1] = {std::begin(map_7point1_ysf), std::end(map_7point1_ysf)};
+    return temp_chn_ysf;
+}
+
+std::map<unsigned, std::vector<channel_id>> init_chn_id()
+{
+    std::map<unsigned, std::vector<channel_id>> temp_chn_id;
+    temp_chn_id[cs_5point1] = {std::begin(map_5point1_id), std::end(map_5point1_id)};
+    temp_chn_id[cs_7point1] = {std::begin(map_7point1_id), std::end(map_7point1_id)};
+    return temp_chn_id;
+}
+
+std::map<unsigned, alloc_lut> init_chn_alloc()
+{
+    std::map<unsigned, alloc_lut> temp_chn_alloc;
+    temp_chn_alloc[cs_5point1].emplace_back(&map_5point1_lf[0], &map_5point1_lf[21]);
+    temp_chn_alloc[cs_5point1].emplace_back(&map_5point1_cf[0], &map_5point1_cf[21]);
+    temp_chn_alloc[cs_5point1].emplace_back(&map_5point1_rf[0], &map_5point1_rf[21]);
+    temp_chn_alloc[cs_5point1].emplace_back(&map_5point1_ls[0], &map_5point1_ls[21]);
+    temp_chn_alloc[cs_5point1].emplace_back(&map_5point1_rs[0], &map_5point1_rs[21]);
+    temp_chn_alloc[cs_5point1].emplace_back(&map_lfe_lfe[0], &map_lfe_lfe[21]);
+    temp_chn_alloc[cs_7point1].emplace_back(&map_7point1_lf[0], &map_7point1_lf[21]);
+    temp_chn_alloc[cs_7point1].emplace_back(&map_7point1_cf[0], &map_7point1_cf[21]);
+    temp_chn_alloc[cs_7point1].emplace_back(&map_7point1_rf[0], &map_7point1_rf[21]);
+    temp_chn_alloc[cs_7point1].emplace_back(&map_7point1_lsm[0], &map_7point1_lsm[21]);
+    temp_chn_alloc[cs_7point1].emplace_back(&map_7point1_rsm[0], &map_7point1_rsm[21]);
+    temp_chn_alloc[cs_7point1].emplace_back(&map_7point1_ls[0], &map_7point1_ls[21]);
+    temp_chn_alloc[cs_7point1].emplace_back(&map_7point1_rs[0], &map_7point1_rs[21]);
+    temp_chn_alloc[cs_7point1].emplace_back(&map_lfe_lfe[0], &map_lfe_lfe[21]);
+    return temp_chn_alloc;
+}
+
+const auto chn_angle = init_chn_angle();
+const auto chn_xsf = init_chn_xsf();
+const auto chn_ysf = init_chn_ysf();
+const auto chn_id = init_chn_id();
+const auto chn_alloc = init_chn_alloc();
