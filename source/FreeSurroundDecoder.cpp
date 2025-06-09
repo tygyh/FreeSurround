@@ -23,9 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <cmath>
 #include <cstring>
 
-#undef min
-#undef max
-
 // FreeSurround implementation
 // DPL2FSDecoder::Init() must be called before using the decoder.
 DPL2FSDecoder::DPL2FSDecoder()
