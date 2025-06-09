@@ -70,11 +70,12 @@ static void kf_bfly2(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
 
 static void kf_bfly4(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cfg st, const size_t m)
 {
-    kiss_fft_cpx *tw1, *tw2, *tw3;
+    const kiss_fft_cpx *tw1 = st->twiddles.data();
+    const kiss_fft_cpx *tw2 = st->twiddles.data();
+    const kiss_fft_cpx *tw3 = st->twiddles.data();
     size_t k = m;
-    const size_t m2 = 2 * m, m3 = 3 * m;
-
-    tw3 = tw2 = tw1 = st->twiddles.data();
+    const size_t m2 = 2 * m;
+    const size_t m3 = 3 * m;
 
     do
     {
@@ -121,10 +122,9 @@ static void kf_bfly3(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
 {
     size_t k = m;
     const size_t m2 = 2 * m;
-    kiss_fft_cpx *tw1, *tw2;
+    const kiss_fft_cpx *tw1 = st->twiddles.data();
+    const kiss_fft_cpx *tw2 = st->twiddles.data();
     const auto [r, i] = st->twiddles[fstride * m];
-
-    tw1 = tw2 = st->twiddles.data();
 
     do
     {
@@ -161,11 +161,16 @@ static void kf_bfly3(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cf
 
 static void kf_bfly5(kiss_fft_cpx *Fout, const size_t fstride, const kiss_fft_cfg st, const int m)
 {
-    kiss_fft_cpx *Fout0 = Fout, *Fout1 = Fout0 + m, *Fout2 = Fout0 + 2 * m, *Fout3 = Fout0 + 3 * m,
-                 *Fout4 = Fout0 + 4 * m;
+    kiss_fft_cpx *Fout0 = Fout;
+    kiss_fft_cpx *Fout1 = Fout0 + m;
+    kiss_fft_cpx *Fout2 = Fout0 + 2 * m;
+    kiss_fft_cpx *Fout3 = Fout0 + 3 * m;
+    kiss_fft_cpx *Fout4 = Fout0 + 4 * m;
     std::array<kiss_fft_cpx, 13> scratch;
-    const kiss_fft_cpx *twiddles = st->twiddles.data(), *tw = st->twiddles.data(), ya = twiddles[fstride * m],
-                       yb = twiddles[fstride * 2 * m];
+    const kiss_fft_cpx *twiddles = st->twiddles.data();
+    const kiss_fft_cpx *tw = st->twiddles.data();
+    const kiss_fft_cpx ya = twiddles[fstride * m];
+    const kiss_fft_cpx yb = twiddles[fstride * 2 * m];
 
     for (int u = 0; u < m; ++u)
     {
@@ -489,7 +494,9 @@ void kiss_fft(const kiss_fft_cfg cfg, const kiss_fft_cpx *fin, kiss_fft_cpx *fou
 int kiss_fft_next_fast_size(const int n)
 {
     std::vector hammingNumbers = {1}; // Start with 1 as the smallest Hamming number
-    int i2 = 0, i3 = 0, i5 = 0; // Pointers for multiples of 2, 3, and 5
+    int i2 = 0; // Pointers for multiples of 2
+    int i3 = 0; // Pointers for multiples of 3
+    int i5 = 0; // Pointers for multiples of 5
 
     while (true)
     {

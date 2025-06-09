@@ -153,7 +153,8 @@ inline double DPL2FSDecoder::edgedistance(const double a)
 // allocation grid
 int DPL2FSDecoder::map_to_grid(double &x)
 {
-    const double gp = (x + 1) * 0.5 * (grid_res - 1), i = min(grid_res - 2, floor(gp));
+    const double gp = (x + 1) * 0.5 * (grid_res - 1);
+    const double i = min(grid_res - 2, floor(gp));
     x = gp - i;
     return static_cast<int>(i);
 }
@@ -176,7 +177,10 @@ void DPL2FSDecoder::buffered_decode(const float *input)
     for (unsigned int f = 1; f < N / 2; f++)
     {
         // get Lt/Rt amplitudes & phases
-        const double ampL = amplitude(lf[f]), ampR = amplitude(rf[f]), phaseL = phase(lf[f]), phaseR = phase(rf[f]);
+        const double ampL = amplitude(lf[f]);
+        const double ampR = amplitude(rf[f]);
+        const double phaseL = phase(lf[f]);
+        const double phaseR = phase(rf[f]);
         // calculate the amplitude & phase differences
         const double ampDiff = clamp(ampL + ampR < epsilon ? 0 : (ampR - ampL) / (ampR + ampL));
         double phaseDiff = abs(phaseL - phaseR);
@@ -202,7 +206,8 @@ void DPL2FSDecoder::buffered_decode(const float *input)
         const std::array phase_of = {phaseL, atan2(lf[f].imag() + rf[f].imag(), lf[f].real() + rf[f].real()), phaseR};
         // compute 2d channel map indexes p/q and update x/y to fractional offsets
         // in the map grid
-        const int p = map_to_grid(x), q = map_to_grid(y);
+        const int p = map_to_grid(x);
+        const int q = map_to_grid(y);
         // map position to channel volumes
         for (unsigned int c = 0; c < C - 1; c++)
         {
@@ -255,12 +260,20 @@ std::tuple<double, double> DPL2FSDecoder::transform_decode(const double amp, con
 
 float DPL2FSDecoder::calculate_x(const double amp, const double phase)
 {
-    const double ap3 = amp * pow(phase, 3), ap4 = amp * pow(phase, 4), ap7 = amp * pow(phase, 7),
-                 ap8 = amp * pow(phase, 8), a3p = pow(amp, 3) * phase, a3p4 = pow(amp, 3) * pow(phase, 4),
-                 a3p7 = pow(amp, 3) * pow(phase, 7), a3p12 = pow(amp, 3) * pow(phase, 7),
-                 a5p7 = pow(amp, 5) * pow(phase, 7), a5p12 = pow(amp, 5) * pow(phase, 12),
-                 a5p15 = pow(amp, 5) * pow(phase, 15), a7p9 = pow(amp, 7) * pow(phase, 9),
-                 a7p15 = pow(amp, 7) * pow(phase, 15), a8p16 = pow(amp, 8) * pow(phase, 16);
+    const double ap3 = amp * pow(phase, 3);
+    const double ap4 = amp * pow(phase, 4);
+    const double ap7 = amp * pow(phase, 7);
+    const double ap8 = amp * pow(phase, 8);
+    const double a3p = pow(amp, 3) * phase;
+    const double a3p4 = pow(amp, 3) * pow(phase, 4);
+    const double a3p7 = pow(amp, 3) * pow(phase, 7);
+    const double a3p12 = pow(amp, 3) * pow(phase, 7);
+    const double a5p7 = pow(amp, 5) * pow(phase, 7);
+    const double a5p12 = pow(amp, 5) * pow(phase, 12);
+    const double a5p15 = pow(amp, 5) * pow(phase, 15);
+    const double a7p9 = pow(amp, 7) * pow(phase, 9);
+    const double a7p15 = pow(amp, 7) * pow(phase, 15);
+    const double a8p16 = pow(amp, 8) * pow(phase, 16);
 
     return clamp(1.0047 * amp + 0.46804 * ap3 - 0.2042 * ap4 + 0.0080586 * ap7 - 0.0001526 * ap8 - 0.073512 * a3p +
                  0.2499 * a3p4 - 0.016932 * a3p7 + 0.00027707 * a3p12 + 0.048105 * a5p7 - 0.0065947 * a5p12 +
@@ -269,8 +282,13 @@ float DPL2FSDecoder::calculate_x(const double amp, const double phase)
 
 float DPL2FSDecoder::calculate_y(const double amp, const double phase)
 {
-    const double p2 = pow(phase, 2), p5 = pow(phase, 5), a2p = pow(amp, 2) * phase, a2p6 = pow(amp, 2) * pow(phase, 6),
-                 a4p7 = pow(amp, 4) * pow(phase, 7), a8 = pow(amp, 8), a10 = pow(amp, 10);
+    const double p2 = pow(phase, 2);
+    const double p5 = pow(phase, 5);
+    const double a2p = pow(amp, 2) * phase;
+    const double a2p6 = pow(amp, 2) * pow(phase, 6);
+    const double a4p7 = pow(amp, 4) * pow(phase, 7);
+    const double a8 = pow(amp, 8);
+    const double a10 = pow(amp, 10);
 
     return clamp(0.98592 - 0.62237 * phase + 0.077875 * p2 - 0.0026929 * p5 + 0.4971 * a2p - 0.00032124 * a2p6 +
                  9.2491e-006 * a4p7 + 0.051549 * a8 + 1.0727e-014 * a10);
@@ -284,7 +302,8 @@ void DPL2FSDecoder::transform_circular_wrap(double &x, double &y, double refangl
     refangle = refangle * pi / 180;
     constexpr double baseangle = pi / 2;
     // translate into edge-normalized polar coordinates
-    double ang = atan2(x, y), len = sqrt(x * x + y * y);
+    double ang = atan2(x, y);
+    double len = sqrt(x * x + y * y);
     len = len / edgedistance(ang);
     // apply circular_wrap transform
     if (abs(ang) < baseangle / 2)
