@@ -435,7 +435,7 @@ kiss_fft_cfg kiss_fft_alloc(const int nfft, const int inverse_fft, void *mem, si
 
     if (lenmem == nullptr)
     {
-        st = reinterpret_cast<kiss_fft_cfg>(new char[memneeded]);
+        st = std::bit_cast<kiss_fft_cfg>(new char[memneeded]);
     }
     else
     {
