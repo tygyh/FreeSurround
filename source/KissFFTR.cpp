@@ -54,7 +54,8 @@ struct kiss_fftr_state
 kiss_fftr_cfg kiss_fftr_alloc(int nfft, const int inverse_fft, void *mem, size_t *lenmem)
 {
     kiss_fftr_cfg st = nullptr;
-    size_t subsize = 65536 * 4, memneeded = 0;
+    size_t subsize = 65536 * 4;
+    size_t memneeded = 0;
 
     if (nfft & 1)
     {
@@ -135,7 +136,10 @@ void kiss_fftr(kiss_fftr_cfg cfg, const kiss_fft_scalar *timedata, kiss_fft_cpx 
 
     for (int k = 1; k <= ncfft / 2; ++k)
     {
-        kiss_fft_cpx fpnk, f1k, f2k, tw;
+        kiss_fft_cpx fpnk;
+        kiss_fft_cpx f1k;
+        kiss_fft_cpx f2k;
+        kiss_fft_cpx tw;
         const kiss_fft_cpx fpk = cfg->tmpbuf[k];
         fpnk.r = cfg->tmpbuf[ncfft - k].r;
         fpnk.i = -cfg->tmpbuf[ncfft - k].i;
@@ -171,7 +175,10 @@ void kiss_fftri(kiss_fftr_cfg cfg, const kiss_fft_cpx *freqdata, kiss_fft_scalar
 
     for (int k = 1; k <= ncfft / 2; ++k)
     {
-        kiss_fft_cpx fnkc, fek, fok, tmp;
+        kiss_fft_cpx fnkc;
+        kiss_fft_cpx fek;
+        kiss_fft_cpx fok;
+        kiss_fft_cpx tmp;
         const kiss_fft_cpx fk = freqdata[k];
         fnkc.r = freqdata[ncfft - k].r;
         fnkc.i = -freqdata[ncfft - k].i;

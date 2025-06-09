@@ -109,7 +109,8 @@ private:
     const float epsilon = 0.000001f;
 
     // number of samples per input/output block, number of output channels
-    unsigned int N, C;
+    unsigned int N;
+    unsigned int C;
     unsigned int samplerate;
 
     // the channel setup
@@ -139,7 +140,8 @@ private:
     float rear_separation;
 
     // LFE cutoff frequencies
-    float lo_cut, hi_cut;
+    float lo_cut;
+    float hi_cut;
 
     // whether to use the LFE channel
     bool use_lfe;
@@ -147,13 +149,17 @@ private:
     // FFT data structures
     // left total, right total (source arrays), time-domain destination buffer
     // array
-    std::vector<double> lt, rt, dst;
+    std::vector<double> lt;
+    std::vector<double> rt;
+    std::vector<double> dst;
 
     // left total / right total in frequency domain
-    std::vector<cplx> lf, rf;
+    std::vector<cplx> lf;
+    std::vector<cplx> rf;
 
     // FFT buffers
-    kiss_fftr_cfg forward, inverse;
+    kiss_fftr_cfg forward;
+    kiss_fftr_cfg inverse;
 
     // buffers
     // whether the buffer is currently empty or dirty
