@@ -141,7 +141,7 @@ inline float DPL2FSDecoder::max(const double a, const double b) { return static_
 
 inline float DPL2FSDecoder::clamp(const double x) { return max(-1, min(1, x)); }
 
-inline float DPL2FSDecoder::sign(const double x) { return static_cast<float>(x < 0 ? -1 : x > 0 ? 1 : 0); }
+inline float DPL2FSDecoder::sign(const double x) { return (x > 0) - (x < 0); }
 
 // get the distance of the soundfield edge, along a given angle
 inline double DPL2FSDecoder::edgedistance(const double a)
