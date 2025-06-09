@@ -3,6 +3,12 @@
 #include <cmath>
 #include <cstdlib>
 #include <numbers>
+#ifdef USE_SIMD
+#include <xmmintrin.h>
+#endif
+#ifdef FIXED_POINT
+#include <sys/types.h>
+#endif
 
 using std::abs;
 using std::sqrt;
@@ -29,7 +35,6 @@ extern "C" {
 */
 
 #ifdef USE_SIMD
-#include <xmmintrin.h>
 #define kiss_fft_scalar __m128
 #define KISS_FFT_MALLOC(nbytes) _mm_malloc(nbytes, 16)
 #define KISS_FFT_FREE _mm_free
@@ -39,7 +44,6 @@ extern "C" {
 #endif
 
 #ifdef FIXED_POINT
-#include <sys/types.h>
 #if (FIXED_POINT == 32)
 using kiss_fft_scalar = int32_t;
 #else
