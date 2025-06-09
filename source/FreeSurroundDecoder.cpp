@@ -167,8 +167,8 @@ void DPL2FSDecoder::buffered_decode(const float *input)
     }
 
     // map into spectral domain
-    kiss_fftr(forward, &lt[0], reinterpret_cast<kiss_fft_cpx *>(&lf[0]));
-    kiss_fftr(forward, &rt[0], reinterpret_cast<kiss_fft_cpx *>(&rf[0]));
+    kiss_fftr(forward, &lt[0], std::bit_cast<kiss_fft_cpx *>(&lf[0]));
+    kiss_fftr(forward, &rt[0], std::bit_cast<kiss_fft_cpx *>(&rf[0]));
 
     // compute multichannel output signal in the spectral domain
     for (unsigned int f = 1; f < N / 2; f++)
@@ -241,7 +241,7 @@ void DPL2FSDecoder::buffered_decode(const float *input)
     for (unsigned int c = 0; c < C; c++)
     {
         // back-transform into time domain
-        kiss_fftri(inverse, reinterpret_cast<kiss_fft_cpx *>(&signal[c][0]), &dst[0]);
+        kiss_fftri(inverse, std::bit_cast<kiss_fft_cpx *>(&signal[c][0]), &dst[0]);
         // add the result to the last 2/3 of the output buffer, windowed (and
         // remultiplex)
         for (unsigned int k = 0; k < N; k++)

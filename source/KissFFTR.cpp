@@ -80,8 +80,8 @@ kiss_fftr_cfg kiss_fftr_alloc(int nfft, const int inverse_fft, void *mem, size_t
     if (!st)
         return nullptr;
 
-    st->substate = reinterpret_cast<kiss_fft_cfg>(st + 1); /*just beyond kiss_fftr_state struct */
-    st->tmpbuf = reinterpret_cast<kiss_fft_cpx *>(reinterpret_cast<char *>(st->substate) + subsize);
+    st->substate = std::bit_cast<kiss_fft_cfg>(st + 1); /*just beyond kiss_fftr_state struct */
+    st->tmpbuf = std::bit_cast<kiss_fft_cpx *>(std::bit_cast<char *>(st->substate) + subsize);
     st->super_twiddles = st->tmpbuf + nfft;
     kiss_fft_alloc(nfft, inverse_fft, st->substate, &subsize);
 
@@ -109,7 +109,7 @@ void kiss_fftr(kiss_fftr_cfg cfg, const kiss_fft_scalar *timedata, kiss_fft_cpx 
     int ncfft = cfg->substate->nfft;
 
     /*perform the parallel fft of two real signals packed in real,imag*/
-    kiss_fft(cfg->substate, reinterpret_cast<const kiss_fft_cpx *>(timedata), cfg->tmpbuf);
+    kiss_fft(cfg->substate, std::bit_cast<const kiss_fft_cpx *>(timedata), cfg->tmpbuf);
     /* The real part of the DC element of the frequency spectrum in st->tmpbuf
      * contains the sum of the even-numbered elements of the input time sequence
      * The imag part is the sum of the odd-numbered elements
@@ -196,5 +196,5 @@ void kiss_fftri(kiss_fftr_cfg cfg, const kiss_fft_cpx *freqdata, kiss_fft_scalar
         cfg->tmpbuf[ncfft - k].i *= -1;
 #endif
     }
-    kiss_fft(cfg->substate, cfg->tmpbuf, reinterpret_cast<kiss_fft_cpx *>(timedata));
+    kiss_fft(cfg->substate, cfg->tmpbuf, std::bit_cast<kiss_fft_cpx *>(timedata));
 }
