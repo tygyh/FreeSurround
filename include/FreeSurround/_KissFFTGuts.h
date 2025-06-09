@@ -45,7 +45,7 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <array>
 
-#define MAXFACTORS 32
+constexpr int MAXFACTORS = 32;
 /* e.g. an fft of length 128 has 4 factors
  as far as kissfft is concerned
  4*4*4*2
@@ -70,16 +70,16 @@ struct kiss_fft_state
  * */
 #ifdef FIXED_POINT
 #if (FIXED_POINT == 32)
-#define FRACBITS 31
-#define SAMPPROD int64_t
-#define SAMP_MAX 2147483647
+constexpr int FRACBITS = 31;
+constexpr auto SAMPPROD = int64_t;
+constexpr int SAMP_MAX = 2147483647;
 #else
-#define FRACBITS 15
-#define SAMPPROD int32_t
-#define SAMP_MAX 32767
+constexpr int FRACBITS = 15;
+constexpr auto SAMPPROD = int32_t;
+constexpr int SAMP_MAX = 32767;
 #endif
 
-#define SAMP_MIN -SAMP_MAX
+constexpr int SAMP_MIN = -SAMP_MAX;
 
 #if defined(CHECK_OVERFLOW)
 #define CHECK_OVERFLOW_OP(a, op, b)                                                                                    \
