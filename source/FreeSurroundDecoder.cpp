@@ -56,7 +56,7 @@ void DPL2FSDecoder::Init(const channel_setup chsetup, const unsigned int blocksi
     rf = std::vector<cplx>(N / 2 + 1);
     forward = kiss_fftr_alloc(N, 0, nullptr, nullptr);
     inverse = kiss_fftr_alloc(N, 1, nullptr, nullptr);
-    C = static_cast<unsigned int>(chn_alloc.at(setup).size());
+    C = chn_alloc.at(to_uint(setup)).size();
 
     // Allocate per-channel buffers
     outbuf.resize((N + N / 2) * C);
@@ -211,11 +211,11 @@ void DPL2FSDecoder::buffered_decode(const float *input)
             // look up channel map at respective position (with bilinear
             // interpolation) and build the
             // signal
-            std::vector<float *> a = chn_alloc.at(setup)[c];
+            std::vector<float *> a = chn_alloc.at(to_uint(setup))[c];
             signal[c][f] = polar(amp_total *
                                      ((1 - x) * (1 - y) * a[q][p] + x * (1 - y) * a[q][p + 1] +
                                       (1 - x) * y * a[q + 1][p] + x * y * a[q + 1][p + 1]),
-                                 phase_of[1 + static_cast<int>(sign(chn_xsf.at(setup)[c]))]);
+                                 phase_of[1 + sign(chn_xsf.at(to_uint(setup))[c])]);
         }
 
         // optionally redirect bass
