@@ -71,7 +71,7 @@ kiss_fftr_cfg kiss_fftr_alloc(int nfft, const int inverse_fft, void *mem, size_t
 
     if (lenmem == nullptr)
     {
-        st = static_cast<kiss_fftr_cfg>(malloc(memneeded));
+        st = static_cast<kiss_fftr_cfg>(operator new(memneeded));
     }
     else
     {
