@@ -44,6 +44,10 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "KissFFT.h"
 
 #include <array>
+#include <source_location>
+#if defined(USE_SIMD)
+#include <xmmintrin.h>
+#endif
 
 constexpr int MAXFACTORS = 32;
 /* e.g. an fft of length 128 has 4 factors
@@ -59,15 +63,6 @@ struct kiss_fft_state
     std::array<kiss_fft_cpx, 1> twiddles;
 };
 
-/*
-  Explanation of macros dealing with complex math:
-
-   C_MUL(m,a,b)         : m = a*b
-   C_FIXDIV( c , div )  : if a fixed point impl., c /= div. noop otherwise
-   C_SUB( res, a,b)     : res = a - b
-   C_SUBFROM( res , a)  : res -= a
-   C_ADDTO( res , a)    : res += a
- * */
 #ifdef FIXED_POINT
 #if (FIXED_POINT == 32)
 constexpr int FRACBITS = 31;
@@ -82,132 +77,223 @@ constexpr int SAMP_MAX = 32767;
 constexpr int SAMP_MIN = -SAMP_MAX;
 
 #if defined(CHECK_OVERFLOW)
-#define CHECK_OVERFLOW_OP(a, op, b)                                                                                    \
-    if ((SAMPPROD)(a)op(SAMPPROD)(b) > SAMP_MAX || (SAMPPROD)(a)op(SAMPPROD)(b) < SAMP_MIN)                            \
-    {                                                                                                                  \
-        fprintf(stderr, "WARNING:overflow @ " __FILE__ "(%d): (%d " #op " %d) = %ld\n", __LINE__, (a), (b),            \
-                (SAMPPROD)(a)op(SAMPPROD)(b));                                                                         \
+template <typename T>
+void check_overflow_add(T a, T b, const std::source_location &loc = std::source_location::current())
+{
+    SAMPPROD result = static_cast<SAMPPROD>(a) + static_cast<SAMPPROD>(b);
+    if (result > SAMP_MAX || result < SAMP_MIN)
+    {
+        fprintf(stderr, "WARNING:overflow @ %s(%u): (%d + %d) = %ld\n", loc.file_name(), loc.line(),
+                static_cast<int>(a), static_cast<int>(b), result);
     }
+}
+
+template <typename T>
+void check_overflow_sub(T a, T b, const std::source_location &loc = std::source_location::current())
+{
+    SAMPPROD result = static_cast<SAMPPROD>(a) - static_cast<SAMPPROD>(b);
+    if (result > SAMP_MAX || result < SAMP_MIN)
+    {
+        fprintf(stderr, "WARNING:overflow @ %s(%u): (%d - %d) = %ld\n", loc.file_name(), loc.line(),
+                static_cast<int>(a), static_cast<int>(b), result);
+    }
+}
+
+template <typename T>
+void check_overflow_mul(T a, T b, const std::source_location &loc = std::source_location::current())
+{
+    SAMPPROD result = static_cast<SAMPPROD>(a) * static_cast<SAMPPROD>(b);
+    if (result > SAMP_MAX || result < SAMP_MIN)
+    {
+        fprintf(stderr, "WARNING:overflow @ %s(%u): (%d * %d) = %ld\n", loc.file_name(), loc.line(),
+                static_cast<int>(a), static_cast<int>(b), result);
+    }
+}
 #endif
 
-#define smul(a, b) ((SAMPPROD)(a) * (b))
-#define sround(x) (kiss_fft_scalar)(((x) + (1 << (FRACBITS - 1))) >> FRACBITS)
+template <typename T>
+constexpr SAMPPROD smul(T a, T b)
+{
+    return static_cast<SAMPPROD>(a) * static_cast<SAMPPROD>(b);
+}
 
-#define S_MUL(a, b) sround(smul(a, b))
+template <typename T>
+constexpr kiss_fft_scalar sround(T x)
+{
+    return static_cast<kiss_fft_scalar>((x + (1 << (FRACBITS - 1))) >> FRACBITS);
+}
 
-#define C_MUL(m, a, b)                                                                                                 \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        (m).r = sround(smul((a).r, (b).r) - smul((a).i, (b).i));                                                       \
-        (m).i = sround(smul((a).r, (b).i) + smul((a).i, (b).r));                                                       \
-    }                                                                                                                  \
-    while (0)
+template <typename T>
+T s_mul(T a, T b)
+{
+    return sround(smul(a, b));
+}
 
-#define DIVSCALAR(x, k) (x) = sround(smul(x, SAMP_MAX / k))
+template <typename ComplexType>
+ComplexType c_mul(const ComplexType &a, const ComplexType &b)
+{
+    return {sround(smul(a.r, b.r) - smul(a.i, b.i)), sround(smul(a.r, b.i) + smul(a.i, b.r))};
+}
 
-#define C_FIXDIV(c, div)                                                                                               \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        DIVSCALAR((c).r, div);                                                                                         \
-        DIVSCALAR((c).i, div);                                                                                         \
-    }                                                                                                                  \
-    while (0)
+template <typename T>
+void divscalar(T &x, int k)
+{
+    x = sround(smul(x, SAMP_MAX / k));
+}
 
-#define C_MULBYSCALAR(c, s)                                                                                            \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        (c).r = sround(smul((c).r, s));                                                                                \
-        (c).i = sround(smul((c).i, s));                                                                                \
-    }                                                                                                                  \
-    while (0)
+template <typename ComplexType>
+void c_fixdiv(ComplexType &c, int div)
+{
+    divscalar(c.r, div);
+    divscalar(c.i, div);
+}
+
+template <typename ComplexType, typename ScalarType>
+ComplexType c_mulbyscalar(const ComplexType &c, ScalarType s)
+{
+    return {sround(smul(c.r, s)), sround(smul(c.i, s))};
+}
 
 #else /* not FIXED_POINT*/
 
-#define S_MUL(a, b) ((a) * (b))
-#define C_MUL(m, a, b)                                                                                                 \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        (m).r = (a).r * (b).r - (a).i * (b).i;                                                                         \
-        (m).i = (a).r * (b).i + (a).i * (b).r;                                                                         \
-    }                                                                                                                  \
-    while (0)
-#define C_FIXDIV(c, div) /* NOOP */
-#define C_MULBYSCALAR(c, s)                                                                                            \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        (c).r *= (s);                                                                                                  \
-        (c).i *= (s);                                                                                                  \
-    }                                                                                                                  \
-    while (0)
+template <typename T>
+constexpr T s_mul(T a, T b)
+{
+    return a * b;
+}
+template <typename ComplexType>
+ComplexType c_mul(const ComplexType &a, const ComplexType &b,
+                  [[maybe_unused]] const std::source_location &loc = std::source_location::current())
+{
+    return {a.r * b.r - a.i * b.i, a.r * b.i + a.i * b.r};
+}
+template <typename ComplexType>
+void c_fixdiv([[maybe_unused]] ComplexType &c, [[maybe_unused]] int div,
+              [[maybe_unused]] const std::source_location &loc = std::source_location::current())
+{
+    // No operation for floating point
+}
+template <typename ComplexType, typename ScalarType>
+ComplexType c_mulbyscalar(const ComplexType &c, ScalarType s,
+                          [[maybe_unused]] const std::source_location &loc = std::source_location::current())
+{
+    return {c.r * s, c.i * s};
+}
 #endif
 
 #ifndef CHECK_OVERFLOW_OP
-#define CHECK_OVERFLOW_OP(a, op, b) /* noop */
+template <typename T>
+void check_overflow_add([[maybe_unused]] T a, [[maybe_unused]] T b,
+                        [[maybe_unused]] const std::source_location &loc = std::source_location::current())
+{
+}
+
+template <typename T>
+void check_overflow_sub([[maybe_unused]] T a, [[maybe_unused]] T b,
+                        [[maybe_unused]] const std::source_location &loc = std::source_location::current())
+{
+}
+
+template <typename T>
+void check_overflow_mul([[maybe_unused]] T a, [[maybe_unused]] T b,
+                        [[maybe_unused]] const std::source_location &loc = std::source_location::current())
+{
+    // No operation - gets optimized away in release builds
+}
+
+template <typename T, typename Op>
+void check_overflow_op([[maybe_unused]] T a, [[maybe_unused]] T b, [[maybe_unused]] Op op,
+                       [[maybe_unused]] const char *op_str,
+                       [[maybe_unused]] const std::source_location &loc = std::source_location::current())
+{
+    // No operation - gets optimized away in release builds
+}
 #endif
 
-#define C_ADD(res, a, b)                                                                                               \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        CHECK_OVERFLOW_OP((a).r, +, (b).r)                                                                             \
-        CHECK_OVERFLOW_OP((a).i, +, (b).i)                                                                             \
-        (res).r = (a).r + (b).r;                                                                                       \
-        (res).i = (a).i + (b).i;                                                                                       \
-    }                                                                                                                  \
-    while (0)
-#define C_SUB(res, a, b)                                                                                               \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        CHECK_OVERFLOW_OP((a).r, -, (b).r)                                                                             \
-        CHECK_OVERFLOW_OP((a).i, -, (b).i)                                                                             \
-        (res).r = (a).r - (b).r;                                                                                       \
-        (res).i = (a).i - (b).i;                                                                                       \
-    }                                                                                                                  \
-    while (0)
-#define C_ADDTO(res, a)                                                                                                \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        CHECK_OVERFLOW_OP((res).r, +, (a).r)                                                                           \
-        CHECK_OVERFLOW_OP((res).i, +, (a).i)                                                                           \
-        (res).r += (a).r;                                                                                              \
-        (res).i += (a).i;                                                                                              \
-    }                                                                                                                  \
-    while (0)
+template <typename ComplexType>
+ComplexType c_add(const ComplexType &a, const ComplexType &b,
+                  const std::source_location &loc = std::source_location::current())
+{
+    check_overflow_add(a.r, b.r, loc);
+    check_overflow_add(a.i, b.i, loc);
+    return {a.r + b.r, a.i + b.i};
+}
 
-#define C_SUBFROM(res, a)                                                                                              \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        CHECK_OVERFLOW_OP((res).r, -, (a).r)                                                                           \
-        CHECK_OVERFLOW_OP((res).i, -, (a).i)                                                                           \
-        (res).r -= (a).r;                                                                                              \
-        (res).i -= (a).i;                                                                                              \
-    }                                                                                                                  \
-    while (0)
+template <typename ComplexType>
+ComplexType c_sub(const ComplexType &a, const ComplexType &b,
+                  const std::source_location &loc = std::source_location::current())
+{
+    check_overflow_sub(a.r, b.r, loc);
+    check_overflow_sub(a.i, b.i, loc);
+    return {a.r - b.r, a.i - b.i};
+}
 
 #ifdef FIXED_POINT
-#define KISS_FFT_COS(phase) floor(.5 + SAMP_MAX * cos(phase))
-#define KISS_FFT_SIN(phase) floor(.5 + SAMP_MAX * sin(phase))
-#define HALF_OF(x) ((x) >> 1)
+template <typename T>
+constexpr SAMP kiss_fft_cos(T phase)
+{
+    return static_cast<SAMP>(std::floor(0.5 + SAMP_MAX * std::cos(phase)));
+}
+
+template <typename T>
+constexpr SAMP kiss_fft_sin(T phase)
+{
+    return static_cast<SAMP>(std::floor(0.5 + SAMP_MAX * std::sin(phase)));
+}
+
+template <typename T>
+constexpr T half_of(T x)
+{
+    return x >> 1;
+}
 #elif defined(USE_SIMD)
-#define KISS_FFT_COS(phase) _mm_set1_ps(cos(phase))
-#define KISS_FFT_SIN(phase) _mm_set1_ps(sin(phase))
-#define HALF_OF(x) ((x) * _mm_set1_ps(.5))
+template <typename T>
+__m128 kiss_fft_cos(T phase)
+{
+    return _mm_set1_ps(std::cos(phase));
+}
+
+template <typename T>
+__m128 kiss_fft_sin(T phase)
+{
+    return _mm_set1_ps(std::sin(phase));
+}
+
+inline __m128 half_of(__m128 x) { return _mm_mul_ps(x, _mm_set1_ps(0.5f)); }
 #else
-#define KISS_FFT_COS(phase) (kiss_fft_scalar) cos(phase)
-#define KISS_FFT_SIN(phase) (kiss_fft_scalar) sin(phase)
-#define HALF_OF(x) ((x) * .5)
+template <typename T>
+constexpr kiss_fft_scalar kiss_fft_cos(T phase)
+{
+    return static_cast<kiss_fft_scalar>(std::cos(phase));
+}
+
+template <typename T>
+constexpr kiss_fft_scalar kiss_fft_sin(T phase)
+{
+    return static_cast<kiss_fft_scalar>(std::sin(phase));
+}
+
+template <typename T>
+constexpr T half_of(T x)
+{
+    return x * static_cast<T>(0.5);
+}
 #endif
 
-#define kf_cexp(x, phase)                                                                                              \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        (x)->r = KISS_FFT_COS(phase);                                                                                  \
-        (x)->i = KISS_FFT_SIN(phase);                                                                                  \
-    }                                                                                                                  \
-    while (0)
+template <typename ComplexType, typename PhaseType>
+ComplexType kf_cexp(PhaseType phase)
+{
+    return {kiss_fft_cos(phase), kiss_fft_sin(phase)};
+}
 
 /* a debugging function */
-#define pcpx(c) fprintf(stderr, "%g + %gi\n", (double)((c)->r), (double)((c)->i))
-
+template <typename ComplexType>
+void pcpx_debug(const ComplexType *c, const std::source_location &loc = std::source_location::current())
+{
+    c ? std::fprintf(stderr, "%g + %gi (at %s:%u)\n", static_cast<double>(c->r), static_cast<double>(c->i),
+                     loc.file_name(), loc.line())
+      : std::fprintf(stderr, "null complex pointer (at %s:%u)\n", loc.file_name(), loc.line());
+}
 #ifdef KISS_FFT_USE_ALLOCA
 // define this to allow use of alloca instead of malloc for temporary buffers
 // Temporary buffers are used in two case:
@@ -215,9 +301,9 @@ constexpr int SAMP_MIN = -SAMP_MAX;
 // 2. "in-place" FFTs.  Notice the quotes, since kissfft does not really do an
 // in-place transform.
 #include <alloca.h>
-#define KISS_FFT_TMP_ALLOC(nbytes) alloca(nbytes)
-#define KISS_FFT_TMP_FREE(ptr)
+inline void *kiss_fft_tmp_alloc(size_t nbytes) { return alloca(nbytes); }
+inline void kiss_fft_tmp_free([[maybe_unused]] void *ptr) {}
 #else
-#define KISS_FFT_TMP_ALLOC(nbytes) KISS_FFT_MALLOC(nbytes)
-#define KISS_FFT_TMP_FREE(ptr) KISS_FFT_FREE(ptr)
+inline void *kiss_fft_tmp_alloc(const size_t nbytes) { return kiss_fft_malloc(nbytes); }
+inline void kiss_fft_tmp_free(void *ptr) { kiss_fft_free(ptr); }
 #endif

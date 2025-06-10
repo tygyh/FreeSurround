@@ -123,9 +123,9 @@ void kiss_fftr(kiss_fftr_cfg cfg, const kiss_fft_scalar *timedata, kiss_fft_cpx 
 
     tdc.r = cfg->tmpbuf[0].r;
     tdc.i = cfg->tmpbuf[0].i;
-    C_FIXDIV(tdc, 2);
-    CHECK_OVERFLOW_OP(tdc.r, +, tdc.i);
-    CHECK_OVERFLOW_OP(tdc.r, -, tdc.i);
+    c_fixdiv(tdc, 2);
+    check_overflow_add(tdc.r, tdc.i);
+    check_overflow_sub(tdc.r, tdc.i);
     freqdata[0].r = tdc.r + tdc.i;
     freqdata[ncfft].r = tdc.r - tdc.i;
 #ifdef USE_SIMD
@@ -137,23 +137,20 @@ void kiss_fftr(kiss_fftr_cfg cfg, const kiss_fft_scalar *timedata, kiss_fft_cpx 
     for (int k = 1; k <= ncfft / 2; ++k)
     {
         kiss_fft_cpx fpnk;
-        kiss_fft_cpx f1k;
-        kiss_fft_cpx f2k;
-        kiss_fft_cpx tw;
         const kiss_fft_cpx fpk = cfg->tmpbuf[k];
         fpnk.r = cfg->tmpbuf[ncfft - k].r;
         fpnk.i = -cfg->tmpbuf[ncfft - k].i;
-        C_FIXDIV(fpk, 2);
-        C_FIXDIV(fpnk, 2);
+        c_fixdiv(fpk, 2);
+        c_fixdiv(fpnk, 2);
 
-        C_ADD(f1k, fpk, fpnk);
-        C_SUB(f2k, fpk, fpnk);
-        C_MUL(tw, f2k, cfg->super_twiddles[k - 1]);
+        const auto [f1k_r, f1k_i] = c_add(fpk, fpnk);
+        const kiss_fft_cpx f2k = c_sub(fpk, fpnk);
+        const auto [tw_r, tw_i] = c_mul(f2k, cfg->super_twiddles[k - 1]);
 
-        freqdata[k].r = HALF_OF(f1k.r + tw.r);
-        freqdata[k].i = HALF_OF(f1k.i + tw.i);
-        freqdata[ncfft - k].r = HALF_OF(f1k.r - tw.r);
-        freqdata[ncfft - k].i = HALF_OF(tw.i - f1k.i);
+        freqdata[k].r = half_of(f1k_r + tw_r);
+        freqdata[k].i = half_of(f1k_i + tw_i);
+        freqdata[ncfft - k].r = half_of(f1k_r - tw_r);
+        freqdata[ncfft - k].i = half_of(tw_i - f1k_i);
     }
 }
 
@@ -171,7 +168,7 @@ void kiss_fftri(kiss_fftr_cfg cfg, const kiss_fft_cpx *freqdata, kiss_fft_scalar
 
     cfg->tmpbuf[0].r = freqdata[0].r + freqdata[ncfft].r;
     cfg->tmpbuf[0].i = freqdata[0].r - freqdata[ncfft].r;
-    C_FIXDIV(st->tmpbuf[0], 2);
+    c_fixdiv(st->tmpbuf[0], 2);
 
     for (int k = 1; k <= ncfft / 2; ++k)
     {
@@ -182,14 +179,14 @@ void kiss_fftri(kiss_fftr_cfg cfg, const kiss_fft_cpx *freqdata, kiss_fft_scalar
         const kiss_fft_cpx fk = freqdata[k];
         fnkc.r = freqdata[ncfft - k].r;
         fnkc.i = -freqdata[ncfft - k].i;
-        C_FIXDIV(fk, 2);
-        C_FIXDIV(fnkc, 2);
+        c_fixdiv(fk, 2);
+        c_fixdiv(fnkc, 2);
 
-        C_ADD(fek, fk, fnkc);
-        C_SUB(tmp, fk, fnkc);
-        C_MUL(fok, tmp, cfg->super_twiddles[k - 1]);
-        C_ADD(cfg->tmpbuf[k], fek, fok);
-        C_SUB(cfg->tmpbuf[ncfft - k], fek, fok);
+        fek = c_add(fk, fnkc);
+        tmp=c_sub( fk, fnkc);
+        fok=c_mul( tmp, cfg->super_twiddles[k - 1]);
+        cfg->tmpbuf[k]=c_add( fek, fok);
+        cfg->tmpbuf[ncfft - k]=c_sub( fek, fok);
 #ifdef USE_SIMD
         st->tmpbuf[ncfft - k].i *= _mm_set1_ps(-1.0);
 #else

@@ -19,9 +19,6 @@ using std::numbers::pi;
 extern "C" {
 #endif
 
-// we're using doubles here...
-#define kiss_fft_scalar double
-
 /*
  ATTENTION!
  If you would like a :
@@ -36,12 +33,12 @@ extern "C" {
 */
 
 #ifdef USE_SIMD
-#define kiss_fft_scalar __m128
-#define KISS_FFT_MALLOC(nbytes) _mm_malloc(nbytes, 16)
-#define KISS_FFT_FREE _mm_free
+using kiss_fft_scalar = __m128;
+inline void *kiss_fft_malloc(size_t nbytes) { return _mm_malloc(nbytes, 16); }
+inline void kiss_fft_free(void *ptr) { _mm_free(ptr); }
 #else
-#define KISS_FFT_MALLOC malloc
-#define KISS_FFT_FREE free
+inline void *kiss_fft_malloc(size_t nbytes) { return std::malloc(nbytes); }
+inline void kiss_fft_free(void *ptr) { std::free(ptr); }
 #endif
 
 #ifdef FIXED_POINT
