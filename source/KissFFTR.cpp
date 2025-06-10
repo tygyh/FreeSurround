@@ -37,6 +37,8 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <cstdio>
+#include <iostream>
+#include <ostream>
 
 #include "../include/FreeSurround/KissFFTR.h"
 #include "../include/FreeSurround/_KissFFTGuts.h"
@@ -59,7 +61,7 @@ kiss_fftr_cfg kiss_fftr_alloc(int nfft, const int inverse_fft, void *mem, size_t
 
     if (nfft & 1)
     {
-        fprintf(stderr, "Real FFT optimization must be even.\n");
+        std::println(std::cerr, "Real FFT optimization must be even.");
         return nullptr;
     }
     nfft >>= 1;
@@ -102,7 +104,7 @@ void kiss_fftr(kiss_fftr_cfg cfg, const kiss_fft_scalar *timedata, kiss_fft_cpx 
 
     if (cfg->substate->inverse)
     {
-        fprintf(stderr, "kiss fft usage error: improper alloc\n");
+        std::println(std::cerr, "kiss fft usage error: improper alloc");
         exit(1);
     }
 
@@ -160,7 +162,7 @@ void kiss_fftri(kiss_fftr_cfg cfg, const kiss_fft_cpx *freqdata, kiss_fft_scalar
 
     if (cfg->substate->inverse == 0)
     {
-        fprintf(stderr, "kiss fft usage error: improper alloc\n");
+        std::println(std::cerr, "kiss fft usage error: improper alloc");
         exit(1);
     }
 
