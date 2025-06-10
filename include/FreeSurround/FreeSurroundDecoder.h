@@ -26,7 +26,7 @@ using cplx = std::complex<double>;
 // right). The ordering here also determines the ordering of interleaved
 // samples in the output signal.
 
-using channel_id = enum {
+enum class channel_id {
     ci_none = 0,
     ci_front_left = 1 << 1,
     ci_front_center_left = 1 << 2,
@@ -47,15 +47,25 @@ using channel_id = enum {
     ci_lfe = 1 << 31
 };
 
+constexpr channel_id operator|(const channel_id a, const channel_id b) {
+    return static_cast<channel_id>(std::to_underlying(a) | std::to_underlying(b));
+}
+
 // The supported output channel setups. A channel setup is defined by the set
 // of channels that are present. Here is a graphic of the cs_5point1 setup:
 // http://en.wikipedia.org/wiki/File:5_1_channels_(surround_sound)_label.svg
-using channel_setup = enum {
-    cs_5point1 = ci_front_left | ci_front_center | ci_front_right | ci_back_left | ci_back_right | ci_lfe,
+enum class channel_setup {
+    cs_5point1 = channel_id::ci_front_left | channel_id::ci_front_center | channel_id::ci_front_right | channel_id::ci_back_left |
+        channel_id::ci_back_right | channel_id::ci_lfe,
 
-    cs_7point1 = ci_front_left | ci_front_center | ci_front_right | ci_side_center_left | ci_side_center_right |
-        ci_back_left | ci_back_right | ci_lfe
+    cs_7point1 = channel_id::ci_front_left | channel_id::ci_front_center | channel_id::ci_front_right |
+        channel_id::ci_side_center_left | channel_id::ci_side_center_right | channel_id::ci_back_left |
+        channel_id::ci_back_right | channel_id::ci_lfe
 };
+
+constexpr unsigned int to_uint(const channel_setup setup) {
+    return std::to_underlying(setup);
+}
 
 // The FreeSurround decoder.
 
@@ -73,7 +83,8 @@ public:
     DPL2FSDecoder();
     ~DPL2FSDecoder();
 
-    void Init(channel_setup chsetup = cs_5point1, unsigned int blocksize = 4096, unsigned int sample_rate = 48000);
+    void Init(channel_setup chsetup = channel_setup::cs_5point1, unsigned int blocksize = 4096,
+              unsigned int sample_rate = 48000);
 
     // Decode a chunk of stereo sound. The output is delayed by half of the
     // blocksize. This function is the only one needed for straightforward
