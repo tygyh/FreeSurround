@@ -1,0 +1,16 @@
+[package]
+name = "freesurround"
+version = "0.1.0"
+edition = "2021"
+authors = ["Christian Kothe", "Mark Borgerding"]
+license = "GPL-2.0-or-later AND BSD-3-Clause"
+description = "FreeSurround audio decoder - converts stereo to surround sound"
+repository = "https://github.com/tygyh/FreeSurround"
+
+[dependencies]
+num-complex = "0.4"
+lazy_static = "1.4"
+
+[lib]
+name = "freesurround"
+path = "src/lib.rs"

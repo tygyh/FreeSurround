@@ -33,3 +33,13 @@
 *.vcxproj
 .idea
 cmake-build-debug
+
+# Rust build artifacts
+/target/
+**/*.rs.bk
+Cargo.lock
+
+
+# Added by cargo
+
+/target
