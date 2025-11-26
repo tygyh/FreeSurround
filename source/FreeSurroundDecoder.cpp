@@ -264,7 +264,7 @@ float DPL2FSDecoder::calculate_x(const double amp, const double phase)
     const double a3p = pow(amp, 3) * phase;
     const double a3p4 = pow(amp, 3) * pow(phase, 4);
     const double a3p7 = pow(amp, 3) * pow(phase, 7);
-    const double a3p12 = pow(amp, 3) * pow(phase, 7);
+    const double a3p12 = pow(amp, 3) * pow(phase, 12);
     const double a5p7 = pow(amp, 5) * pow(phase, 7);
     const double a5p12 = pow(amp, 5) * pow(phase, 12);
     const double a5p15 = pow(amp, 5) * pow(phase, 15);

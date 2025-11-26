@@ -281,9 +281,10 @@ constexpr T half_of(T x)
 #endif
 
 template <typename ComplexType, typename PhaseType>
-ComplexType kf_cexp(PhaseType phase)
+void kf_cexp(ComplexType *x, PhaseType phase)
 {
-    return {kiss_fft_cos(phase), kiss_fft_sin(phase)};
+    x->r = kiss_fft_cos(phase);
+    x->i = kiss_fft_sin(phase);
 }
 
 /* a debugging function */

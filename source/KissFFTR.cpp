@@ -170,7 +170,7 @@ void kiss_fftri(kiss_fftr_cfg cfg, const kiss_fft_cpx *freqdata, kiss_fft_scalar
 
     cfg->tmpbuf[0].r = freqdata[0].r + freqdata[ncfft].r;
     cfg->tmpbuf[0].i = freqdata[0].r - freqdata[ncfft].r;
-    c_fixdiv(st->tmpbuf[0], 2);
+    c_fixdiv(cfg->tmpbuf[0], 2);
 
     for (int k = 1; k <= ncfft / 2; ++k)
     {

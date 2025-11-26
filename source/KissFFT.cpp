@@ -245,11 +245,10 @@ static void kf_bfly_generic(kiss_fft_cpx *Fout, const size_t fstride, const kiss
             Fout[j] = scratch[0];
             for (int q = 1; q < p; ++q)
             {
-                kiss_fft_cpx t;
                 twidx += static_cast<int>(fstride) * j;
                 if (twidx >= Norig)
                     twidx -= Norig;
-                c_mul( scratch[q], twiddles[twidx]);
+                kiss_fft_cpx t = c_mul(scratch[q], twiddles[twidx]);
                 Fout[j] = c_add(Fout[j], t);
             }
             j += m;
