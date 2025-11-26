@@ -56,10 +56,10 @@ constexpr channel_id operator|(const channel_id a, const channel_id b) {
 // of channels that are present. Here is a graphic of the cs_5point1 setup:
 // http://en.wikipedia.org/wiki/File:5_1_channels_(surround_sound)_label.svg
 enum class channel_setup {
-    cs_5point1 = static_cast<int>(channel_id::ci_front_left | channel_id::ci_front_center | channel_id::ci_front_right | channel_id::ci_back_left |
+    cs_5point1 = std::to_underlying(channel_id::ci_front_left | channel_id::ci_front_center | channel_id::ci_front_right | channel_id::ci_back_left |
         channel_id::ci_back_right | channel_id::ci_lfe),
 
-    cs_7point1 = static_cast<int>(channel_id::ci_front_left | channel_id::ci_front_center | channel_id::ci_front_right |
+    cs_7point1 = std::to_underlying(channel_id::ci_front_left | channel_id::ci_front_center | channel_id::ci_front_right |
         channel_id::ci_side_center_left | channel_id::ci_side_center_right | channel_id::ci_back_left |
         channel_id::ci_back_right | channel_id::ci_lfe)
 };
