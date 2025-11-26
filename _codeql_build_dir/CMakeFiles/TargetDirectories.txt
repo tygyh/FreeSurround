@@ -1,0 +1,3 @@
+/home/runner/work/FreeSurround/FreeSurround/_codeql_build_dir/CMakeFiles/FreeSurround.dir
+/home/runner/work/FreeSurround/FreeSurround/_codeql_build_dir/CMakeFiles/edit_cache.dir
+/home/runner/work/FreeSurround/FreeSurround/_codeql_build_dir/CMakeFiles/rebuild_cache.dir
