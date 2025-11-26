@@ -582,26 +582,36 @@ std::map<unsigned, std::vector<channel_id>> init_chn_id()
 
 std::map<unsigned, alloc_lut> init_chn_alloc()
 {
+    // Helper lambda to convert array of arrays to vector of pointers
+    auto to_ptr_vector = [](const auto& arr) {
+        std::vector<const float*> result;
+        result.reserve(arr.size());
+        for (const auto& row : arr) {
+            result.push_back(row.data());
+        }
+        return result;
+    };
+
     std::map<unsigned, alloc_lut> temp_chn_alloc;
-    temp_chn_alloc[to_uint(channel_setup::cs_5point1)].emplace_back(&map_5point1_lf[0], &map_5point1_lf[21]);
-    temp_chn_alloc[to_uint(channel_setup::cs_5point1)].emplace_back(&map_5point1_cf[0], &map_5point1_cf[21]);
-    temp_chn_alloc[to_uint(channel_setup::cs_5point1)].emplace_back(&map_5point1_rf[0], &map_5point1_rf[21]);
-    temp_chn_alloc[to_uint(channel_setup::cs_5point1)].emplace_back(&map_5point1_ls[0], &map_5point1_ls[21]);
-    temp_chn_alloc[to_uint(channel_setup::cs_5point1)].emplace_back(&map_5point1_rs[0], &map_5point1_rs[21]);
-    temp_chn_alloc[to_uint(channel_setup::cs_5point1)].emplace_back(&map_lfe_lfe[0], &map_lfe_lfe[21]);
-    temp_chn_alloc[to_uint(channel_setup::cs_7point1)].emplace_back(&map_7point1_lf[0], &map_7point1_lf[21]);
-    temp_chn_alloc[to_uint(channel_setup::cs_7point1)].emplace_back(&map_7point1_cf[0], &map_7point1_cf[21]);
-    temp_chn_alloc[to_uint(channel_setup::cs_7point1)].emplace_back(&map_7point1_rf[0], &map_7point1_rf[21]);
-    temp_chn_alloc[to_uint(channel_setup::cs_7point1)].emplace_back(&map_7point1_lsm[0], &map_7point1_lsm[21]);
-    temp_chn_alloc[to_uint(channel_setup::cs_7point1)].emplace_back(&map_7point1_rsm[0], &map_7point1_rsm[21]);
-    temp_chn_alloc[to_uint(channel_setup::cs_7point1)].emplace_back(&map_7point1_ls[0], &map_7point1_ls[21]);
-    temp_chn_alloc[to_uint(channel_setup::cs_7point1)].emplace_back(&map_7point1_rs[0], &map_7point1_rs[21]);
-    temp_chn_alloc[to_uint(channel_setup::cs_7point1)].emplace_back(&map_lfe_lfe[0], &map_lfe_lfe[21]);
+    temp_chn_alloc[to_uint(channel_setup::cs_5point1)].push_back(to_ptr_vector(map_5point1_lf));
+    temp_chn_alloc[to_uint(channel_setup::cs_5point1)].push_back(to_ptr_vector(map_5point1_cf));
+    temp_chn_alloc[to_uint(channel_setup::cs_5point1)].push_back(to_ptr_vector(map_5point1_rf));
+    temp_chn_alloc[to_uint(channel_setup::cs_5point1)].push_back(to_ptr_vector(map_5point1_ls));
+    temp_chn_alloc[to_uint(channel_setup::cs_5point1)].push_back(to_ptr_vector(map_5point1_rs));
+    temp_chn_alloc[to_uint(channel_setup::cs_5point1)].push_back(to_ptr_vector(map_lfe_lfe));
+    temp_chn_alloc[to_uint(channel_setup::cs_7point1)].push_back(to_ptr_vector(map_7point1_lf));
+    temp_chn_alloc[to_uint(channel_setup::cs_7point1)].push_back(to_ptr_vector(map_7point1_cf));
+    temp_chn_alloc[to_uint(channel_setup::cs_7point1)].push_back(to_ptr_vector(map_7point1_rf));
+    temp_chn_alloc[to_uint(channel_setup::cs_7point1)].push_back(to_ptr_vector(map_7point1_lsm));
+    temp_chn_alloc[to_uint(channel_setup::cs_7point1)].push_back(to_ptr_vector(map_7point1_rsm));
+    temp_chn_alloc[to_uint(channel_setup::cs_7point1)].push_back(to_ptr_vector(map_7point1_ls));
+    temp_chn_alloc[to_uint(channel_setup::cs_7point1)].push_back(to_ptr_vector(map_7point1_rs));
+    temp_chn_alloc[to_uint(channel_setup::cs_7point1)].push_back(to_ptr_vector(map_lfe_lfe));
     return temp_chn_alloc;
 }
 
-const auto chn_angle = init_chn_angle();
-const auto chn_xsf = init_chn_xsf();
-const auto chn_ysf = init_chn_ysf();
-const auto chn_id = init_chn_id();
-const auto chn_alloc = init_chn_alloc();
+const std::map<unsigned, std::vector<float>> chn_angle = init_chn_angle();
+const std::map<unsigned, std::vector<float>> chn_xsf = init_chn_xsf();
+const std::map<unsigned, std::vector<float>> chn_ysf = init_chn_ysf();
+const std::map<unsigned, std::vector<channel_id>> chn_id = init_chn_id();
+const std::map<unsigned, alloc_lut> chn_alloc = init_chn_alloc();

@@ -44,6 +44,7 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "KissFFT.h"
 
 #include <array>
+#include <cstdio>
 #include <source_location>
 #if defined(USE_SIMD)
 #include <xmmintrin.h>
@@ -281,9 +282,10 @@ constexpr T half_of(T x)
 #endif
 
 template <typename ComplexType, typename PhaseType>
-ComplexType kf_cexp(PhaseType phase)
+void kf_cexp(ComplexType* c, PhaseType phase)
 {
-    return {kiss_fft_cos(phase), kiss_fft_sin(phase)};
+    c->r = kiss_fft_cos(phase);
+    c->i = kiss_fft_sin(phase);
 }
 
 /* a debugging function */

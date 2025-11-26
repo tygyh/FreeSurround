@@ -38,6 +38,7 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../include/FreeSurround/_KissFFTGuts.h"
 
+#include <cstring>
 #include <numeric>
 #include <random>
 #include <vector>
@@ -249,7 +250,7 @@ static void kf_bfly_generic(kiss_fft_cpx *Fout, const size_t fstride, const kiss
                 twidx += static_cast<int>(fstride) * j;
                 if (twidx >= Norig)
                     twidx -= Norig;
-                c_mul( scratch[q], twiddles[twidx]);
+                t = c_mul(scratch[q], twiddles[twidx]);
                 Fout[j] = c_add(Fout[j], t);
             }
             j += m;

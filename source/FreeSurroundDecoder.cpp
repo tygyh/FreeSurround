@@ -49,9 +49,9 @@ void DPL2FSDecoder::Init(const channel_setup chsetup, const unsigned int blocksi
     // Initialize the parameters
     wnd = std::vector<double>(N);
     inbuf = std::vector<float>(3 * N);
-    lt = std::vector<double>(N);
-    rt = std::vector<double>(N);
-    dst = std::vector<double>(N);
+    lt = std::vector<kiss_fft_scalar>(N);
+    rt = std::vector<kiss_fft_scalar>(N);
+    dst = std::vector<kiss_fft_scalar>(N);
     lf = std::vector<cplx>(N / 2 + 1);
     rf = std::vector<cplx>(N / 2 + 1);
     forward = kiss_fftr_alloc(N, 0, nullptr, nullptr);
@@ -211,7 +211,7 @@ void DPL2FSDecoder::buffered_decode(const float *input)
             // look up channel map at respective position (with bilinear
             // interpolation) and build the
             // signal
-            std::vector<float *> a = chn_alloc.at(to_uint(setup))[c];
+            std::vector<const float *> a = chn_alloc.at(to_uint(setup))[c];
             signal[c][f] = polar(amp_total *
                                      ((1 - x) * (1 - y) * a[q][p] + x * (1 - y) * a[q][p + 1] +
                                       (1 - x) * y * a[q + 1][p] + x * y * a[q + 1][p + 1]),
@@ -264,7 +264,7 @@ float DPL2FSDecoder::calculate_x(const double amp, const double phase)
     const double a3p = pow(amp, 3) * phase;
     const double a3p4 = pow(amp, 3) * pow(phase, 4);
     const double a3p7 = pow(amp, 3) * pow(phase, 7);
-    const double a3p12 = pow(amp, 3) * pow(phase, 7);
+    const double a3p12 = pow(amp, 3) * pow(phase, 12);
     const double a5p7 = pow(amp, 5) * pow(phase, 7);
     const double a5p12 = pow(amp, 5) * pow(phase, 12);
     const double a5p15 = pow(amp, 5) * pow(phase, 15);
