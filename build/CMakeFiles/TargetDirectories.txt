@@ -1,0 +1,3 @@
+/home/runner/work/FreeSurround/FreeSurround/build/CMakeFiles/FreeSurround.dir
+/home/runner/work/FreeSurround/FreeSurround/build/CMakeFiles/edit_cache.dir
+/home/runner/work/FreeSurround/FreeSurround/build/CMakeFiles/rebuild_cache.dir
