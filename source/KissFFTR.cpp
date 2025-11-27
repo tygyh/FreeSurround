@@ -38,7 +38,6 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <cstdio>
 #include <iostream>
-#include <ostream>
 
 #include "../include/FreeSurround/KissFFTR.h"
 #include "../include/FreeSurround/_KissFFTGuts.h"
@@ -61,7 +60,7 @@ kiss_fftr_cfg kiss_fftr_alloc(int nfft, const int inverse_fft, void *mem, size_t
 
     if (nfft & 1)
     {
-        std::println(std::cerr, "Real FFT optimization must be even.");
+        std::cerr << "Real FFT optimization must be even." << std::endl;
         return nullptr;
     }
     nfft >>= 1;
@@ -104,7 +103,7 @@ void kiss_fftr(kiss_fftr_cfg cfg, const kiss_fft_scalar *timedata, kiss_fft_cpx 
 
     if (cfg->substate->inverse)
     {
-        std::println(std::cerr, "kiss fft usage error: improper alloc");
+        std::cerr << "kiss fft usage error: improper alloc" << std::endl;
         exit(1);
     }
 
@@ -162,7 +161,7 @@ void kiss_fftri(kiss_fftr_cfg cfg, const kiss_fft_cpx *freqdata, kiss_fft_scalar
 
     if (cfg->substate->inverse == 0)
     {
-        std::println(std::cerr, "kiss fft usage error: improper alloc");
+        std::cerr << "kiss fft usage error: improper alloc" << std::endl;
         exit(1);
     }
 
@@ -170,7 +169,7 @@ void kiss_fftri(kiss_fftr_cfg cfg, const kiss_fft_cpx *freqdata, kiss_fft_scalar
 
     cfg->tmpbuf[0].r = freqdata[0].r + freqdata[ncfft].r;
     cfg->tmpbuf[0].i = freqdata[0].r - freqdata[ncfft].r;
-    c_fixdiv(st->tmpbuf[0], 2);
+    c_fixdiv(cfg->tmpbuf[0], 2);
 
     for (int k = 1; k <= ncfft / 2; ++k)
     {
@@ -190,7 +189,7 @@ void kiss_fftri(kiss_fftr_cfg cfg, const kiss_fft_cpx *freqdata, kiss_fft_scalar
         cfg->tmpbuf[k]=c_add( fek, fok);
         cfg->tmpbuf[ncfft - k]=c_sub( fek, fok);
 #ifdef USE_SIMD
-        st->tmpbuf[ncfft - k].i *= _mm_set1_ps(-1.0);
+        cfg->tmpbuf[ncfft - k].i *= _mm_set1_ps(-1.0);
 #else
         cfg->tmpbuf[ncfft - k].i *= -1;
 #endif

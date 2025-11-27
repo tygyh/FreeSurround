@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 constexpr int grid_res = 21; // resolution of the lookup grid
 
 // channel allocation maps (per setup)
-using alloc_lut = std::vector<std::vector<float *>>;
+using alloc_lut = std::vector<std::vector<const float *>>;
 extern const std::map<unsigned, alloc_lut> chn_alloc;
 // channel metadata maps (per setup)
 extern const std::map<unsigned, std::vector<float>> chn_angle;

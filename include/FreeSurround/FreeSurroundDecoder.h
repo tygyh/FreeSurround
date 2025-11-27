@@ -17,6 +17,7 @@
 #pragma once
 
 #include <complex>
+#include <utility>
 #include <vector>
 #include "KissFFTR.h"
 
@@ -55,12 +56,12 @@ constexpr channel_id operator|(const channel_id a, const channel_id b) {
 // of channels that are present. Here is a graphic of the cs_5point1 setup:
 // http://en.wikipedia.org/wiki/File:5_1_channels_(surround_sound)_label.svg
 enum class channel_setup {
-    cs_5point1 = channel_id::ci_front_left | channel_id::ci_front_center | channel_id::ci_front_right | channel_id::ci_back_left |
-        channel_id::ci_back_right | channel_id::ci_lfe,
+    cs_5point1 = std::to_underlying(channel_id::ci_front_left | channel_id::ci_front_center | channel_id::ci_front_right | channel_id::ci_back_left |
+        channel_id::ci_back_right | channel_id::ci_lfe),
 
-    cs_7point1 = channel_id::ci_front_left | channel_id::ci_front_center | channel_id::ci_front_right |
+    cs_7point1 = std::to_underlying(channel_id::ci_front_left | channel_id::ci_front_center | channel_id::ci_front_right |
         channel_id::ci_side_center_left | channel_id::ci_side_center_right | channel_id::ci_back_left |
-        channel_id::ci_back_right | channel_id::ci_lfe
+        channel_id::ci_back_right | channel_id::ci_lfe)
 };
 
 constexpr unsigned int to_uint(const channel_setup setup) {
@@ -160,9 +161,9 @@ private:
     // FFT data structures
     // left total, right total (source arrays), time-domain destination buffer
     // array
-    std::vector<double> lt;
-    std::vector<double> rt;
-    std::vector<double> dst;
+    std::vector<kiss_fft_scalar> lt;
+    std::vector<kiss_fft_scalar> rt;
+    std::vector<kiss_fft_scalar> dst;
 
     // left total / right total in frequency domain
     std::vector<cplx> lf;
