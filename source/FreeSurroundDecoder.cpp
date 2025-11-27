@@ -249,6 +249,20 @@ void DPL2FSDecoder::buffered_decode(const float *input)
     }
 }
 
+// Helper struct to hold pre-computed powers of amp and phase
+struct PowerCache
+{
+    // Common powers of amp
+    double a2, a4, a8;
+    // Common powers of phase
+    double p2, p4;
+
+    PowerCache(const double amp, const double phase)
+        : a2(amp * amp), a4(a2 * a2), a8(a4 * a4), p2(phase * phase), p4(p2 * p2)
+    {
+    }
+};
+
 // transform amp/phase difference space into x/y soundfield space
 std::tuple<double, double> DPL2FSDecoder::transform_decode(const double amp, const double phase)
 {
@@ -257,30 +271,30 @@ std::tuple<double, double> DPL2FSDecoder::transform_decode(const double amp, con
 
 float DPL2FSDecoder::calculate_x(const double amp, const double phase)
 {
-    // Pre-compute powers of amp and phase using multiplication instead of pow()
-    const double a2 = amp * amp;
-    const double a3 = a2 * amp;
-    const double a4 = a2 * a2;
-    const double a5 = a4 * amp;
-    const double a7 = a4 * a3;
-    const double a8 = a4 * a4;
+    // Pre-compute common powers
+    const PowerCache cache(amp, phase);
 
-    const double p2 = phase * phase;
-    const double p3 = p2 * phase;
-    const double p4 = p2 * p2;
-    const double p7 = p4 * p3;
-    const double p8 = p4 * p4;
+    // Additional powers of amp needed for calculate_x
+    const double a3 = cache.a2 * amp;
+    const double a5 = cache.a4 * amp;
+    const double a7 = cache.a4 * a3;
+
+    // Additional powers of phase needed for calculate_x
+    const double p3 = cache.p2 * phase;
+    const double p7 = cache.p4 * p3;
+    const double p8 = cache.p4 * cache.p4;
     const double p9 = p8 * phase;
-    const double p12 = p8 * p4;
+    const double p12 = p8 * cache.p4;
     const double p15 = p8 * p7;
     const double p16 = p8 * p8;
 
+    // Combined terms
     const double ap3 = amp * p3;
-    const double ap4 = amp * p4;
+    const double ap4 = amp * cache.p4;
     const double ap7 = amp * p7;
     const double ap8 = amp * p8;
     const double a3p = a3 * phase;
-    const double a3p4 = a3 * p4;
+    const double a3p4 = a3 * cache.p4;
     const double a3p7 = a3 * p7;
     const double a3p12 = a3 * p12;
     const double a5p7 = a5 * p7;
@@ -288,7 +302,7 @@ float DPL2FSDecoder::calculate_x(const double amp, const double phase)
     const double a5p15 = a5 * p15;
     const double a7p9 = a7 * p9;
     const double a7p15 = a7 * p15;
-    const double a8p16 = a8 * p16;
+    const double a8p16 = cache.a8 * p16;
 
     return clamp(1.0047 * amp + 0.46804 * ap3 - 0.2042 * ap4 + 0.0080586 * ap7 - 0.0001526 * ap8 - 0.073512 * a3p +
                  0.2499 * a3p4 - 0.016932 * a3p7 + 0.00027707 * a3p12 + 0.048105 * a5p7 - 0.0065947 * a5p12 +
@@ -297,24 +311,24 @@ float DPL2FSDecoder::calculate_x(const double amp, const double phase)
 
 float DPL2FSDecoder::calculate_y(const double amp, const double phase)
 {
-    // Pre-compute powers of amp and phase using multiplication instead of pow()
-    const double a2 = amp * amp;
-    const double a4 = a2 * a2;
-    const double a8 = a4 * a4;
-    const double a10 = a8 * a2;
+    // Pre-compute common powers
+    const PowerCache cache(amp, phase);
 
-    const double p2 = phase * phase;
-    const double p4 = p2 * p2;
-    const double p5 = p4 * phase;
-    const double p6 = p4 * p2;
+    // Additional powers of amp needed for calculate_y
+    const double a10 = cache.a8 * cache.a2;
+
+    // Additional powers of phase needed for calculate_y
+    const double p5 = cache.p4 * phase;
+    const double p6 = cache.p4 * cache.p2;
     const double p7 = p6 * phase;
 
-    const double a2p = a2 * phase;
-    const double a2p6 = a2 * p6;
-    const double a4p7 = a4 * p7;
+    // Combined terms
+    const double a2p = cache.a2 * phase;
+    const double a2p6 = cache.a2 * p6;
+    const double a4p7 = cache.a4 * p7;
 
-    return clamp(0.98592 - 0.62237 * phase + 0.077875 * p2 - 0.0026929 * p5 + 0.4971 * a2p - 0.00032124 * a2p6 +
-                 9.2491e-006 * a4p7 + 0.051549 * a8 + 1.0727e-014 * a10);
+    return clamp(0.98592 - 0.62237 * phase + 0.077875 * cache.p2 - 0.0026929 * p5 + 0.4971 * a2p - 0.00032124 * a2p6 +
+                 9.2491e-006 * a4p7 + 0.051549 * cache.a8 + 1.0727e-014 * a10);
 }
 
 // apply a circular_wrap transformation to some position
