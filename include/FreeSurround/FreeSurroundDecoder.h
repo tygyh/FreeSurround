@@ -199,7 +199,7 @@ private:
     static inline float min(double a, double b);
     static inline float max(double a, double b);
     static inline float clamp(double x);
-    static inline float sign(double x);
+    static inline int sign(double x);
 
     // get the distance of the soundfield edge, along a given angle
     static inline double edgedistance(double a);
