@@ -307,7 +307,7 @@ float DPL2FSDecoder::calculate_y(const double amp, const double phase)
     const double p4 = p2 * p2;
     const double p5 = p4 * phase;
     const double p6 = p4 * p2;
-    const double p7 = p4 * p2 * phase;
+    const double p7 = p6 * phase;
 
     const double a2p = a2 * phase;
     const double a2p6 = a2 * p6;
