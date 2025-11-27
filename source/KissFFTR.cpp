@@ -38,6 +38,7 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <cstdio>
 #include <iostream>
+#include <stdexcept>
 
 #include "../include/FreeSurround/KissFFTR.h"
 #include "../include/FreeSurround/_KissFFTGuts.h"
@@ -103,8 +104,7 @@ void kiss_fftr(kiss_fftr_cfg cfg, const kiss_fft_scalar *timedata, kiss_fft_cpx 
 
     if (cfg->substate->inverse)
     {
-        std::cerr << "kiss fft usage error: improper alloc" << std::endl;
-        exit(1);
+        throw std::runtime_error("kiss fft usage error: forward FFT expected but inverse FFT configuration provided");
     }
 
     int ncfft = cfg->substate->nfft;
@@ -161,8 +161,7 @@ void kiss_fftri(kiss_fftr_cfg cfg, const kiss_fft_cpx *freqdata, kiss_fft_scalar
 
     if (cfg->substate->inverse == 0)
     {
-        std::cerr << "kiss fft usage error: improper alloc" << std::endl;
-        exit(1);
+        throw std::runtime_error("kiss fft usage error: inverse FFT expected but forward FFT configuration provided");
     }
 
     int ncfft = cfg->substate->nfft;
