@@ -368,8 +368,8 @@ int pollards_rho(const int n)
     if (n % 2 == 0)
         return 2;
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    // Use a static random generator to avoid re-initialization cost on each call
+    static std::mt19937 gen(std::random_device{}());
     std::uniform_int_distribution dist(1, n - 1);
 
     int64_t x = dist(gen);
@@ -492,38 +492,21 @@ void kiss_fft(const kiss_fft_cfg cfg, const kiss_fft_cpx *fin, kiss_fft_cpx *fou
  * @return The smallest integer greater than or equal to `n`
  *         divisible only by the primes 2, 3, and 5.
  */
-int kiss_fft_next_fast_size(const int n)
+int kiss_fft_next_fast_size(int n)
 {
-    std::vector hammingNumbers = {1}; // Start with 1 as the smallest Hamming number
-    int i2 = 0; // Pointers for multiples of 2
-    int i3 = 0; // Pointers for multiples of 3
-    int i5 = 0; // Pointers for multiples of 5
-
+    // Direct search approach: check each number starting from n
+    // and verify if it's a Hamming number (only divisible by 2, 3, 5)
     while (true)
     {
-        // Generate the next candidates by multiplying with 2, 3, and 5
-        int next2 = hammingNumbers[i2] * 2;
-        int next3 = hammingNumbers[i3] * 3;
-        int next5 = hammingNumbers[i5] * 5;
-
-        // Find the smallest candidate
-        int nextHamming = std::ranges::min({next2, next3, next5});
-
-        // If the candidate is >= n, return it
-        if (nextHamming >= n)
-        {
-            return nextHamming;
-        }
-
-        // Add the smallest candidate to the list
-        hammingNumbers.push_back(nextHamming);
-
-        // Increment the respective pointer(s)
-        if (nextHamming == next2)
-            i2++;
-        if (nextHamming == next3)
-            i3++;
-        if (nextHamming == next5)
-            i5++;
+        int m = n;
+        while (m % 2 == 0)
+            m /= 2;
+        while (m % 3 == 0)
+            m /= 3;
+        while (m % 5 == 0)
+            m /= 5;
+        if (m == 1)
+            return n; // n is a Hamming number
+        ++n;
     }
 }
