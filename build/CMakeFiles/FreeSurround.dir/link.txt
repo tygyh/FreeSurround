@@ -1,2 +1,0 @@
-/usr/bin/ar qc libFreeSurround.a CMakeFiles/FreeSurround.dir/source/ChannelMaps.cpp.o CMakeFiles/FreeSurround.dir/source/KissFFT.cpp.o CMakeFiles/FreeSurround.dir/source/FreeSurroundDecoder.cpp.o CMakeFiles/FreeSurround.dir/source/KissFFTR.cpp.o
-/usr/bin/ranlib libFreeSurround.a

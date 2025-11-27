@@ -33,3 +33,4 @@
 *.vcxproj
 .idea
 cmake-build-debug
+build/
