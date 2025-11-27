@@ -257,20 +257,38 @@ std::tuple<double, double> DPL2FSDecoder::transform_decode(const double amp, con
 
 float DPL2FSDecoder::calculate_x(const double amp, const double phase)
 {
-    const double ap3 = amp * pow(phase, 3);
-    const double ap4 = amp * pow(phase, 4);
-    const double ap7 = amp * pow(phase, 7);
-    const double ap8 = amp * pow(phase, 8);
-    const double a3p = pow(amp, 3) * phase;
-    const double a3p4 = pow(amp, 3) * pow(phase, 4);
-    const double a3p7 = pow(amp, 3) * pow(phase, 7);
-    const double a3p12 = pow(amp, 3) * pow(phase, 12);
-    const double a5p7 = pow(amp, 5) * pow(phase, 7);
-    const double a5p12 = pow(amp, 5) * pow(phase, 12);
-    const double a5p15 = pow(amp, 5) * pow(phase, 15);
-    const double a7p9 = pow(amp, 7) * pow(phase, 9);
-    const double a7p15 = pow(amp, 7) * pow(phase, 15);
-    const double a8p16 = pow(amp, 8) * pow(phase, 16);
+    // Pre-compute powers of amp and phase using multiplication instead of pow()
+    const double a2 = amp * amp;
+    const double a3 = a2 * amp;
+    const double a4 = a2 * a2;
+    const double a5 = a4 * amp;
+    const double a7 = a4 * a3;
+    const double a8 = a4 * a4;
+
+    const double p2 = phase * phase;
+    const double p3 = p2 * phase;
+    const double p4 = p2 * p2;
+    const double p7 = p4 * p3;
+    const double p8 = p4 * p4;
+    const double p9 = p8 * phase;
+    const double p12 = p8 * p4;
+    const double p15 = p8 * p7;
+    const double p16 = p8 * p8;
+
+    const double ap3 = amp * p3;
+    const double ap4 = amp * p4;
+    const double ap7 = amp * p7;
+    const double ap8 = amp * p8;
+    const double a3p = a3 * phase;
+    const double a3p4 = a3 * p4;
+    const double a3p7 = a3 * p7;
+    const double a3p12 = a3 * p12;
+    const double a5p7 = a5 * p7;
+    const double a5p12 = a5 * p12;
+    const double a5p15 = a5 * p15;
+    const double a7p9 = a7 * p9;
+    const double a7p15 = a7 * p15;
+    const double a8p16 = a8 * p16;
 
     return clamp(1.0047 * amp + 0.46804 * ap3 - 0.2042 * ap4 + 0.0080586 * ap7 - 0.0001526 * ap8 - 0.073512 * a3p +
                  0.2499 * a3p4 - 0.016932 * a3p7 + 0.00027707 * a3p12 + 0.048105 * a5p7 - 0.0065947 * a5p12 +
@@ -279,13 +297,21 @@ float DPL2FSDecoder::calculate_x(const double amp, const double phase)
 
 float DPL2FSDecoder::calculate_y(const double amp, const double phase)
 {
-    const double p2 = pow(phase, 2);
-    const double p5 = pow(phase, 5);
-    const double a2p = pow(amp, 2) * phase;
-    const double a2p6 = pow(amp, 2) * pow(phase, 6);
-    const double a4p7 = pow(amp, 4) * pow(phase, 7);
-    const double a8 = pow(amp, 8);
-    const double a10 = pow(amp, 10);
+    // Pre-compute powers of amp and phase using multiplication instead of pow()
+    const double a2 = amp * amp;
+    const double a4 = a2 * a2;
+    const double a8 = a4 * a4;
+    const double a10 = a8 * a2;
+
+    const double p2 = phase * phase;
+    const double p4 = p2 * p2;
+    const double p5 = p4 * phase;
+    const double p6 = p4 * p2;
+    const double p7 = p4 * p2 * phase;
+
+    const double a2p = a2 * phase;
+    const double a2p6 = a2 * p6;
+    const double a4p7 = a4 * p7;
 
     return clamp(0.98592 - 0.62237 * phase + 0.077875 * p2 - 0.0026929 * p5 + 0.4971 * a2p - 0.00032124 * a2p6 +
                  9.2491e-006 * a4p7 + 0.051549 * a8 + 1.0727e-014 * a10);
