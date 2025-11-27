@@ -253,9 +253,12 @@ void DPL2FSDecoder::buffered_decode(const float *input)
 struct PowerCache
 {
     // Common powers of amp
-    double a2, a4, a8;
+    double a2;
+    double a4;
+    double a8;
     // Common powers of phase
-    double p2, p4;
+    double p2;
+    double p4;
 
     PowerCache(const double amp, const double phase)
         : a2(amp * amp), a4(a2 * a2), a8(a4 * a4), p2(phase * phase), p4(p2 * p2)
